@@ -1,0 +1,53 @@
+Index: src/kernel/qapplication.cpp
+===================================================================
+--- src/kernel/qapplication.cpp.orig
++++ src/kernel/qapplication.cpp
+@@ -320,6 +320,7 @@ void qt_init( int *, char **, QApplicati
+ void qt_cleanup();
+ #if defined(Q_WS_X11)
+ void qt_init( Display* dpy, Qt::HANDLE, Qt::HANDLE );
++void qt_init( int *, char **, Display* dpy, Qt::HANDLE, Qt::HANDLE );
+ #endif
+ Q_EXPORT bool qt_tryModalHelper( QWidget *widget, QWidget **rettop );
+ 
+@@ -908,7 +909,7 @@ QApplication::QApplication(Display *dpy,
+ 
+ 	qt_init( &argc, argv, GuiClient );
+     } else {
+-	qt_init(dpy, visual, colormap);
++	qt_init( &argc, argv, dpy, visual, colormap);
+     }
+ 
+     process_cmdline( &argc, argv );
+Index: src/kernel/qapplication_x11.cpp
+===================================================================
+--- src/kernel/qapplication_x11.cpp.orig
++++ src/kernel/qapplication_x11.cpp
+@@ -201,6 +201,7 @@ static bool	mwIconic	= FALSE;	// main wi
+ static Display *appDpy		= 0;		// X11 application display
+ static char    *appDpyName	= 0;		// X11 display name
+ static bool	appForeignDpy	= FALSE;        // we didn't create display
++Q_EXPORT bool qt_no_foreign_hack = false;
+ static bool	appSync		= FALSE;	// X11 synchronization
+ #if defined(QT_DEBUG)
+ static bool	appNoGrab	= FALSE;	// X11 grabbing enabled
+@@ -1651,7 +1652,7 @@ void qt_init_internal( int *argcptr, cha
+     }
+ #endif
+ 
+-    if ( display ) {
++    if ( display && ! qt_no_foreign_hack ) {
+ 	// Qt part of other application
+ 
+ 	appForeignDpy = TRUE;
+@@ -2464,6 +2465,10 @@ void qt_init( Display *display, Qt::HAND
+     qt_init_internal( 0, 0, display, visual, colormap );
+ }
+ 
++void qt_init( int *argcptr, char **argv, Display *display, Qt::HANDLE visual, Qt::HANDLE colormap )
++{
++    qt_init_internal( argcptr, argv, display, visual, colormap );
++}
+ 
+ /*****************************************************************************
+   qt_cleanup() - cleans up when the application is finished
