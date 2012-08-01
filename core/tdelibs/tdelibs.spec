@@ -183,7 +183,7 @@ tar xfvj %SOURCE12
 # define KDE version exactly
 #
 myrelease=$(echo %release | cut -d. -f-1)
-sed 's,#define KDE_VERSION_STRING "\(.*\)",#define KDE_VERSION_STRING "\1 \\"release '$myrelease'\\"",' kdecore/kdeversion.h > kdecore/kdeversion.h_ && mv kdecore/kdeversion.h_ kdecore/kdeversion.h
+sed 's,#define TDE_VERSION_STRING "\(.*\)",#define TDE_VERSION_STRING "\1 \\"release '$myrelease'\\"",' tdecore/tdeversion.h > kdecore/kdeversion.h_ && mv tdecore/tdeversion.h_ tdecore/tdeversion.h
 #
 # create build enviroment
 # 

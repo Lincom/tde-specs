@@ -1,6 +1,8 @@
---- kdelibs-3.5.10/kio/kio/kzip.cpp.orig	2009-12-09 18:42:47.000000000 +0100
-+++ kdelibs-3.5.10/kio/kio/kzip.cpp	2009-12-09 18:45:43.000000000 +0100
-@@ -1051,6 +1051,20 @@
+Index: tdelibs-R13.99/kio/kio/kzip.cpp
+===================================================================
+--- tdelibs-R13.99.orig/kio/kio/kzip.cpp
++++ tdelibs-R13.99/kio/kio/kzip.cpp
+@@ -1051,6 +1051,20 @@ bool KZip::closeArchive()
      return true;
  }
  
@@ -21,9 +23,10 @@
  // Doesn't need to be reimplemented anymore. Remove for KDE-4.0
  bool KZip::writeFile( const TQString& name, const TQString& user, const TQString& group, uint size, const char* data )
  {
-diff -up kdelibs-3.5.10/kio/kio/kzip.h.orig kdelibs-3.5.10/kio/kio/kzip.h
---- kdelibs-3.5.10/kio/kio/kzip.h.orig	2009-12-09 19:35:42.000000000 +0100
-+++ kdelibs-3.5.10/kio/kio/kzip.h	2009-12-09 19:35:48.000000000 +0100
+Index: tdelibs-R13.99/kio/kio/kzip.h
+===================================================================
+--- tdelibs-R13.99.orig/kio/kio/kzip.h
++++ tdelibs-R13.99/kio/kio/kzip.h
 @@ -191,10 +191,7 @@ protected:
      /// Closes the archive
      virtual bool closeArchive();

@@ -6,5 +6,5 @@ Index: mimetypes/application/x-jar.desktop
  Comment[zh_HK]=Java 壓縮檔
  Comment[zh_TW]=Java 壓縮檔案
  Comment[zu]=Umqulu we-Java
--X-KDE-AutoEmbed=true
-+X-KDE-AutoEmbed=false
+-X-TDE-AutoEmbed=true
++X-TDE-AutoEmbed=false
