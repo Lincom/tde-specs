@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Aug  4 17:02:26 UTC 2012 - robxu9@gmail.com
+
+- fix plugins-lib64 symlink for amd64
+
+-------------------------------------------------------------------
 Sat Aug  4 14:59:37 UTC 2012 - robxu9@gmail.com
 
 - create tdelibs for suse12.1

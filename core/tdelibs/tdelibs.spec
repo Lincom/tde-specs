@@ -265,9 +265,9 @@ sed '/<catalog/a\
   # lib64 compatibility symlink
   #
 %ifarch x86_64 ppc64 s390x mips64 sparc64
-    mkdir -p $RPM_BUILD_ROOT/%{_tde_prefix}/lib/kde3/
-    ln -sf ../../lib64/kde3/plugins \
-         $RPM_BUILD_ROOT/%{_tde_prefix}/lib/kde3/plugins-lib64
+    mkdir -p $RPM_BUILD_ROOT/%{_tde_prefix}/lib/trinity/
+    ln -sf ../../lib64/trinity/plugins \
+         $RPM_BUILD_ROOT/%{_tde_prefix}/lib/trinity/plugins-lib64
 %endif
   #
   # add missing directories
