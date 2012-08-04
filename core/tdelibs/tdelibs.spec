@@ -38,6 +38,7 @@ Provides:       kdelibs3_base = 3.5.13
 Requires:       libtqt4 >= %( echo `rpm -q --queryformat '%{VERSION}' libtqt4`)
 Requires:       openssl tdelibs-default-style
 Requires:       hicolor-icon-theme
+PreReq:		permissions
 Recommends:     ispell enscript
 Requires:       sudo
 Source0:        %{name}-%{version}.tar.bz2
@@ -68,7 +69,7 @@ Patch127:       x-jar-desktop.diff
 Patch129:       default-useragent.diff
 Patch132:       no-debug-by-default.diff
 Patch133:       flash-player-non-oss.diff
-Patch153:       bug-382959_kabc_fix_vcardparser.patch
+#Patch153:       bug-382959_kabc_fix_vcardparser.patch
 Patch157:       ignore-inline-menu.diff
 Patch162:       arts-acinclude.patch
 Patch205:       kdelibs-3.5.10-cve-2009-2537-select-length.patch
@@ -127,6 +128,7 @@ Requires:       tdelibs-doc libtiff-devel openssl-devel update-desktop-files
 Requires:       libdrm-devel dbus-1-tqt-devel
 Requires:       libattr-devel libacl-devel
 Requires:       tdelibs-arts
+Provides:	pkgconfig(tdelibs)
 Summary:        Trinity Base Package: Build Environment
 Group:          System/GUI/TDE
 Requires:       fam-devel pcre-devel libidn-devel arts-devel
@@ -170,7 +172,7 @@ to develop applications that require these.
 %if %suse_version > 1020
 %patch133
 %endif
-%patch153
+#%patch153
 %if %suse_version > 1110
 %patch157
 %endif
@@ -295,7 +297,8 @@ sed '/<catalog/a\
   done
   install -d -m 0755 $RPM_BUILD_ROOT/etc/%{_tde_libdir}
   install -d -m 0755 $RPM_BUILD_ROOT/etc/%{_tde_configdir}
-  install -d -m 0755 $RPM_BUILD_ROOT/%{_tde_datadir}/kdelibs/
+  # tdelibs: Was only needed for automake
+  #install -d -m 0755 $RPM_BUILD_ROOT/%{_tde_datadir}/kdelibs/
   install -m 0644 %SOURCE6 $RPM_BUILD_ROOT/etc/
   rm -f $RPM_BUILD_ROOT/%{_tde_libdir}/libkdeinit_*.la
   #
@@ -355,19 +358,23 @@ cat > $RPM_BUILD_ROOT/etc/ld.so.conf.d/tdelibs.conf <<EOF
 EOF
 
 # Fix Kspell symlink
-rm -fv $RPM_BUILD_ROOT/opt/tde/share/doc/kde/HTML/en/kspell/common
-ln -sfv /opt/tde/share/doc/kde/HTML/en/common $RPM_BUILD_ROOT/opt/tde/share/doc/kde/HTML/en/kspell/common
+rm -fv $RPM_BUILD_ROOT/opt/tde/share/doc/tde/HTML/en/kspell/common
+ln -sfv /opt/tde/share/doc/tde/HTML/en/common $RPM_BUILD_ROOT/opt/tde/share/doc/tde/HTML/en/kspell/common
 
 # move cmake to %{_datadir}
 mkdir -pv %{buildroot}/%{_datadir}/cmake
 mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}/cmake
 
+chmod u-s %{buildroot}/%{_tde_bindir}/kpac_dhcp_helper
+chmod u-s %{buildroot}/%{_tde_bindir}/start_tdeinit
+
 %post
 /sbin/ldconfig
-%run_permissions
+%set_permissions %{_tde_bindir}/kpac_dhcp_helper
+%set_permissions %{_tde_bindir}/start_tdeinit
 
 %postun
-  rm -f usr/share/doc/KDE3-API/index.html
+rm -f usr/share/doc/KDE3-API/index.html
 /sbin/ldconfig
 
 %post arts
@@ -384,7 +391,7 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 
 %post doc
   if [ -x %{regcat} ]; then
-    %{regcat} -a %{_tde_datadir}/ksgmltools2/customization/CATALOG.%{name} >/dev/null 2>&1
+    %{regcat} -a %{_tde_prefix}/share/apps/ksgmltools2/customization/catalog # >/dev/null 2>&1
   fi
   if [ -x /usr/bin/edit-xml-catalog ]; then
     edit-xml-catalog --group --catalog /etc/xml/suse-catalog.xml \
@@ -393,7 +400,7 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 
 %postun doc
   if [ "$1" = "0" -a -x %{regcat} ]; then
-    %{regcat} -r %{_tde_datadir}/ksgmltools2/customization/CATALOG.%{name} >/dev/null 2>&1
+    %{regcat} -r %{_tde_prefix}/share/apps/ksgmltools2/customization/catalog >/dev/null 2>&1
   fi
   # remove entries only on removal of file
   if [ ! -f %{xml_sysconf_dir}/%{FOR_ROOT_CAT} -a -x /usr/bin/edit-xml-catalog ] ; then
@@ -404,6 +411,10 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 
 %clean
   rm -rf ${RPM_BUILD_ROOT}
+
+%verifyscript
+%verify_permissions -e %{_tde_bindir}/kpac_dhcp_helper
+%verify_permissions -e %{_tde_bindir}/start_tdeinit
 
 %files default-style
 %defattr(-,root,root)
@@ -421,7 +432,6 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %dir %{_tde_includedir}
 %dir %{_tde_sharedir}
 %dir %{_tde_configkcfgdir}
-%_mandir/man*/*
 %{_tde_bindir}/checkXML
 %{_tde_bindir}/dcop
 %{_tde_bindir}/dcopclient
@@ -439,7 +449,7 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %{_tde_bindir}/kdetcompmgr
 %{_tde_bindir}/networkstatustestservice
 %{_tde_bindir}/tdeinit*
-%{_tde_bindir}/start_tdeinit
+%verify(not mode) %{_tde_bindir}/start_tdeinit
 %{_tde_bindir}/start_tdeinit_wrapper
 %{_tde_bindir}/tde-config
 %{_tde_bindir}/kde-menu
@@ -451,7 +461,6 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %{_tde_bindir}/klauncher
 %{_tde_bindir}/kmailservice
 %{_tde_bindir}/ktradertest
-%{_tde_bindir}/knotify
 %{_tde_bindir}/kstartupconfig
 %{_tde_bindir}/kdostartupconfig
 %verify(not mode) %{_tde_bindir}/kpac_dhcp_helper
@@ -520,6 +529,11 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %{_tde_datadir}/LICENSES
 %{_tde_datadir}/ka*
 %{_tde_datadir}/kc*
+%dir %{_tde_datadir}/tdehwlib
+%dir %{_tde_datadir}/tdehwlib/deviceclasses
+%{_tde_datadir}/tdehwlib/deviceclasses/*.hwclass
+%dir %{_tde_datadir}/tdehwlib/pnpdev
+%{_tde_datadir}/tdehwlib/pnpdev/*.ids
 %dir %{_tde_datadir}/tdeprint
 %{_tde_datadir}/tdeprint/apsdriver*
 %{_tde_datadir}/tdeprint/filters
@@ -592,16 +606,14 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 
 %files devel
 %defattr(-,root,root)
-%dir %{_tde_datadir}/kdelibs
+#%dir %{_tde_datadir}/kdelibs
 %{_tde_bindir}/dcopidl*
 %{_tde_bindir}/kmimelist
 %{_tde_bindir}/preparetips
-%{_tde_bindir}/ksvgtopng
 %{_tde_bindir}/kunittestmodrunner
 #%{_tde_bindir}/MISC
 %{_tde_includedir}/*
 %{_tde_datadir}/dcopidlng
-%{_tde_datadir}/kdelibs/admin
 %{_tde_libdir}/libartskde.la
 %{_tde_libdir}/libkunittest.la
 %{_tde_libdir}/libkunittest.so
@@ -615,6 +627,8 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %{_tde_libdir}/libkabc_dir.so
 %{_tde_libdir}/libkabc_file.la
 %{_tde_libdir}/libkabc_file.so
+%{_tde_libdir}/libkabc_net.la
+%{_tde_libdir}/libkabc_net.so
 %{_tde_libdir}/libkabc.la
 %{_tde_libdir}/libkabc_ldapkio.la
 %{_tde_libdir}/libkabc_ldapkio.so
@@ -693,5 +707,7 @@ mv -v %{buildroot}/%{_tde_sharedir}/cmake/tdelibs.cmake %{buildroot}/%{_datadir}
 %{_tde_libdir}/libconnectionmanager.la
 %{_tde_libdir}/libconnectionmanager.so
 %{_datadir}/cmake/tdelibs.cmake
+/usr/lib/pkgconfig/tdelibs.pc
+
 
 %changelog
