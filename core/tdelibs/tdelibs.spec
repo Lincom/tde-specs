@@ -25,7 +25,7 @@ BuildRequires:  libxslt-devel openldap2-devel pcre-devel libtqt4-devel sgml-skel
 BuildRequires:  db-devel libacl-devel libattr-devel unsermake update-desktop-files utempter
 BuildRequires:  unzip
 BuildRequires:  avahi-compat-mDNSResponder-devel fdupes libbz2-devel libjasper-devel
-BuildRequires:  libdrm-devel tde-filesystem cmake
+BuildRequires:  libdrm-devel tde-filesystem cmake libtool
 URL:            http://www.trinitydesktop.org/
 License:        BSD3c(or similar) ; GPLv2+ ; LGPLv2.1+
 Group:          System/GUI/TDE
