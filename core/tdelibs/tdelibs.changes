@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Aug  5 00:48:41 UTC 2012 - robxu9@gmail.com
+
+- fix pkgconfig path for amd64
+
+-------------------------------------------------------------------
 Sat Aug  4 17:07:29 UTC 2012 - robxu9@gmail.com
 
 - explicitly require libtoolfor ltdl.h (suse12.2)

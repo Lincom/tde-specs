@@ -707,7 +707,7 @@ rm -f usr/share/doc/KDE3-API/index.html
 %{_tde_libdir}/libconnectionmanager.la
 %{_tde_libdir}/libconnectionmanager.so
 %{_datadir}/cmake/tdelibs.cmake
-/usr/lib/pkgconfig/tdelibs.pc
+%{_libdir}/pkgconfig/tdelibs.pc
 
 
 %changelog
