@@ -1,10 +1,10 @@
-Index: kdm/config.def
+Index: tdm/config.def
 ===================================================================
---- kdm/config.def.orig
-+++ kdm/config.def
+--- tdm/config.def.orig
++++ tdm/config.def
 @@ -792,6 +792,21 @@ Description:
   <emphasis>Do not</emphasis> change it, you may interfere with future
-  upgrades and this could result in &kdm; failing to run.
+  upgrades and this could result in &tdm; failing to run.
  
 +Key: SUSEConfigVersion
 +Type: string
@@ -19,7 +19,7 @@ Index: kdm/config.def
 +Description:
 + This option exists solely for the purpose of clean automatic upgrades.
 + <emphasis>Do not</emphasis> change it, you may interfere with future
-+ upgrades and this could result in &kdm; failing to run.
++ upgrades and this could result in &tdm; failing to run.
 +
  Key: PAMService
  If: defined(USE_PAM)
@@ -29,14 +29,14 @@ Index: kdm/config.def
  Key: PidFile
  Type: string
 -Default: ""
-+Default: "/var/run/kdm.pid"
++Default: "/var/run/tdm.pid"
  User: core
--Instance: "/var/run/kdm.pid"
+-Instance: "/var/run/tdm.pid"
 -Merge: xdm
 +Instance: ""
 +Update: reset_sec_0_1
  Comment:
-  Where &kdm; should store its PID (do not store if empty).
+  Where &tdm; should store its PID (do not store if empty).
  Description:
 @@ -901,10 +916,10 @@ Description:
  Key: AuthDir
@@ -72,7 +72,7 @@ Index: kdm/config.def
 +Update: reset_sec_0_1
  Comment: &
  Description:
-  Whether &kdm; should listen to incoming &XDMCP; requests.
+  Whether &tdm; should listen to incoming &XDMCP; requests.
 @@ -1102,11 +1118,10 @@ Description:
  Key: Xaccess
  Type: string
@@ -99,7 +99,7 @@ Index: kdm/config.def
  Instance: #
 -Update: mk_willing
 -Merge: xdm
--Merge: kdm:Xwilling
+-Merge: tdm:Xwilling
 +Update: reset_sec_0_1
  Comment:
   The program which is invoked to dynamically generate replies to &XDMCP;
@@ -124,7 +124,7 @@ Index: kdm/config.def
 @@ -1355,7 +1369,7 @@ Description:
   This string is subject to word splitting.
   </para><para>
-  The default is something reasonable for the system on which &kdm; was built,
+  The default is something reasonable for the system on which &tdm; was built,
 - like <command>/usr/X11R6/bin/X</command>.
 + like <command>/usr/bin/X</command>.
  
@@ -236,10 +236,10 @@ Index: kdm/config.def
  User: greeter
  Instance: */Root
 -Instance: :*/All
--Merge: kdm:-Greeter/
+-Merge: tdm:-Greeter/
 +Instance: #:*/All
 +Update: reset_sec_0_1
-+#Merge: kdm:-Greeter/
++#Merge: tdm:-Greeter/
  Comment: &
  Description:
   Who is allowed to shut down the system. This applies both to the
@@ -314,7 +314,7 @@ Index: kdm/config.def
  Instance: :0/true
 +Update: reset_sec_0_1
  Comment:
-  Enable &kdm;'s built-in xconsole. Note that this can be enabled for only
+  Enable &tdm;'s built-in xconsole. Note that this can be enabled for only
   one display at a time.
 @@ -2595,9 +2612,10 @@ Description:
  
@@ -351,10 +351,10 @@ Index: kdm/config.def
  Comment: &
  Description:
   The theme to use for the greeter. Can point to either a directory or an XML
-Index: kdm/kfrontend/read_sysconfig.sh
+Index: tdm/kfrontend/read_sysconfig.sh
 ===================================================================
 --- /dev/null
-+++ kdm/kfrontend/read_sysconfig.sh
++++ tdm/kfrontend/read_sysconfig.sh
 @@ -0,0 +1,147 @@
 +#!/bin/bash
 +#
@@ -383,11 +383,11 @@ Index: kdm/kfrontend/read_sysconfig.sh
 +# source /etc/profile to get $kdedir
 +#
 +kdedir="/opt/kde3"
-+kdmdir="/var/adm/kdm"
++tdmdir="/var/adm/tdm"
 +
 +# check for write permissions
-+[ -w ${kdmdir} ] || mkdir -p ${kdmdir}
-+[ -w ${kdmdir} ] || exit
++[ -w ${tdmdir} ] || mkdir -p ${tdmdir}
++[ -w ${tdmdir} ] || exit
 +
 +#
 +# Set Style of Shutdown
@@ -430,15 +430,15 @@ Index: kdm/kfrontend/read_sysconfig.sh
 +if [ "$DISPLAYMANAGER_AD_INTEGRATION" = "yes" ]; then
 +  echo "PluginsLogin=winbind"
 +fi
-+if [ -n "$DISPLAYMANAGER_KDM_THEME" -a -d "/opt/kde3/share/apps/kdm/themes/$DISPLAYMANAGER_KDM_THEME" ]; then
-+  echo "Theme=/opt/kde3/share/apps/kdm/themes/$DISPLAYMANAGER_KDM_THEME"
++if [ -n "$DISPLAYMANAGER_KDM_THEME" -a -d "/opt/kde3/share/apps/tdm/themes/$DISPLAYMANAGER_KDM_THEME" ]; then
++  echo "Theme=/opt/kde3/share/apps/tdm/themes/$DISPLAYMANAGER_KDM_THEME"
 +  echo "UseTheme=true"
 +  echo "UseBackground=false"
 +else
 +  echo "UseTheme=false"
 +  echo "UseBackground=true"
 +fi
-+# kdm has en_US as default instead of simply reading LC_LANG :(
++# tdm has en_US as default instead of simply reading LC_LANG :(
 +echo "Language="
 +
 +echo "[Xdmcp]"
@@ -501,13 +501,13 @@ Index: kdm/kfrontend/read_sysconfig.sh
 +  echo "StaticServers="
 +fi
 +
-+) > ${kdmdir}/kdmrc.sysconfig
++) > ${tdmdir}/tdmrc.sysconfig
 +
-Index: kdm/kfrontend/kdm_config.c
+Index: tdm/kfrontend/tdm_config.c
 ===================================================================
---- kdm/kfrontend/kdm_config.c.orig
-+++ kdm/kfrontend/kdm_config.c
-@@ -386,7 +386,7 @@ static const char *kdmrc = KDMCONF "/kdm
+--- tdm/kfrontend/tdm_config.c.orig
++++ tdm/kfrontend/tdm_config.c
+@@ -386,7 +386,7 @@ static const char *tdmrc = KDMCONF "/tdm
  static Section *rootsec;
  
  static void
@@ -526,8 +526,8 @@ Index: kdm/kfrontend/kdm_config.c
 -		return;
 -	confread = 1;
 -
--	Debug( "reading config %s ...\n", kdmrc );
--	if (!readFile( &file, kdmrc, "master configuration" ))
+-	Debug( "reading config %s ...\n", tdmrc );
+-	if (!readFile( &file, tdmrc, "master configuration" ))
 +	Debug( "reading config %s ...\n", rcfile );
 +	if (!readFile( &file, rcfile, "master configuration" ))
  		return;
@@ -537,7 +537,7 @@ Index: kdm/kfrontend/kdm_config.c
  				e--;
  			if (*e != ']') {
  				cursec = 0;
--				LogError( "Invalid section header at %s:%d\n", kdmrc, line );
+-				LogError( "Invalid section header at %s:%d\n", tdmrc, line );
 +				LogError( "Invalid section header at %s:%d\n", rcfile, line );
  				continue;
  			}
@@ -547,7 +547,7 @@ Index: kdm/kfrontend/kdm_config.c
  				    !memcmp( nstr, cursec->name, nlen ))
  				{
 -					LogInfo( "Multiple occurrences of section [%.*s] in %s. "
--					         "Consider merging them.\n", nlen, nstr, kdmrc );
+-					         "Consider merging them.\n", nlen, nstr, tdmrc );
 +					Debug( "Multiple occurrences of section [%.*s] in %s. "
 +					         "Consider merging them.\n", nlen, nstr, rcfile );
  					goto secfnd;
@@ -557,7 +557,7 @@ Index: kdm/kfrontend/kdm_config.c
  		  illsec:
  			cursec = 0;
  			LogError( "Unrecognized section name [%.*s] at %s:%d\n",
--			          nlen, nstr, kdmrc, line );
+-			          nlen, nstr, tdmrc, line );
 +			          nlen, nstr, rcfile, line );
  			continue;
  		  newsec:
@@ -566,7 +566,7 @@ Index: kdm/kfrontend/kdm_config.c
  		if (!cursec) {
  			if (sectmoan) {
  				sectmoan = 0;
--				LogError( "Entry outside any section at %s:%d", kdmrc, line );
+-				LogError( "Entry outside any section at %s:%d", tdmrc, line );
 +				LogError( "Entry outside any section at %s:%d", rcfile, line );
  			}
  			goto sktoeol;
@@ -575,14 +575,14 @@ Index: kdm/kfrontend/kdm_config.c
  		for (; (s < file.eof) && (*s != '\n'); s++)
  			if (*s == '=')
  				goto haveeq;
--		LogError( "Invalid entry (missing '=') at %s:%d\n", kdmrc, line );
+-		LogError( "Invalid entry (missing '=') at %s:%d\n", tdmrc, line );
 +		LogError( "Invalid entry (missing '=') at %s:%d\n", rcfile, line );
  		continue;
  
  	  haveeq:
  		for (ek = s - 1; ; ek--) {
  			if (ek < sl) {
--				LogError( "Invalid entry (empty key) at %s:%d\n", kdmrc, line );
+-				LogError( "Invalid entry (empty key) at %s:%d\n", tdmrc, line );
 +				LogError( "Invalid entry (empty key) at %s:%d\n", rcfile, line );
  				goto sktoeol;
  			}
@@ -591,7 +591,7 @@ Index: kdm/kfrontend/kdm_config.c
  			if (*s == '\\') {
  				s++;
  				if (s >= file.eof || *s == '\n') {
--					LogError( "Trailing backslash at %s:%d\n", kdmrc, line );
+-					LogError( "Trailing backslash at %s:%d\n", tdmrc, line );
 +					LogError( "Trailing backslash at %s:%d\n", rcfile, line );
  					break;
  				}
@@ -600,7 +600,7 @@ Index: kdm/kfrontend/kdm_config.c
  				goto keyok;
  		}
  		LogError( "Unrecognized key '%.*s' in section [%.*s] at %s:%d\n",
--		          nlen, nstr, cursec->nlen, cursec->name, kdmrc, line );
+-		          nlen, nstr, cursec->nlen, cursec->name, tdmrc, line );
 +		          nlen, nstr, cursec->nlen, cursec->name, rcfile, line );
  		continue;
  	  keyok:
@@ -608,7 +608,7 @@ Index: kdm/kfrontend/kdm_config.c
  			if (ce == curent->ent) {
  				LogError( "Multiple occurrences of key '%s' in section [%.*s]"
  				          " of %s\n",
--				          ce->name, cursec->nlen, cursec->name, kdmrc );
+-				          ce->name, cursec->nlen, cursec->name, tdmrc );
 +				          ce->name, cursec->nlen, cursec->name, rcfile );
  				goto keyfnd;
  			}
@@ -636,18 +636,18 @@ Index: kdm/kfrontend/kdm_config.c
 +		return;
 +	confread++;
 +
-+	system("/opt/kde3/share/apps/kdm/read_sysconfig.sh");
-+	ReadConfFile("/var/adm/kdm/kdmrc.sysconfig");
-+	ReadConfFile(kdmrc);
++	system("/opt/kde3/share/apps/tdm/read_sysconfig.sh");
++	ReadConfFile("/var/adm/tdm/tdmrc.sysconfig");
++	ReadConfFile(tdmrc);
 +}
 +
  static Entry *
  FindGEnt( int id )
  {
-Index: kdm/kfrontend/genkdmconf.c
+Index: tdm/kfrontend/gentdmconf.c
 ===================================================================
---- kdm/kfrontend/genkdmconf.c.orig
-+++ kdm/kfrontend/genkdmconf.c
+--- tdm/kfrontend/gentdmconf.c.orig
++++ tdm/kfrontend/gentdmconf.c
 @@ -66,6 +66,7 @@ Foundation, Inc., 51 Franklin Street, Fi
  #define stringify(x) __stringify(x)
  
@@ -713,8 +713,8 @@ Index: kdm/kfrontend/genkdmconf.c
  	}
  
  #ifdef XDMCP
--	applydefs( kdmdefs_all, as(kdmdefs_all), path );
-+	/* applydefs( kdmdefs_all, as(kdmdefs_all), path ); */
+-	applydefs( tdmdefs_all, as(tdmdefs_all), path );
++	/* applydefs( tdmdefs_all, as(tdmdefs_all), path ); */
  #endif
 +	susever = getfqval( "General", "SUSEConfigVersion", "" );
 +	if (sscanf( susever, "%u", &oldsusever ) != 1)
@@ -723,15 +723,15 @@ Index: kdm/kfrontend/genkdmconf.c
  	if (!*(cp = getfqval( "General", "ConfigVersion", "" ))) { /* < 3.1 */
  		mod_usebg = 1;
  		if (is22conf( path )) {
-Index: kdm/kfrontend/Makefile.am
+Index: tdm/kfrontend/Makefile.am
 ===================================================================
---- kdm/kfrontend/Makefile.am.orig
-+++ kdm/kfrontend/Makefile.am
-@@ -64,3 +64,7 @@ kdm_greet_COMPILE_FIRST = ../config.ci
- kdm_config_COMPILE_FIRST = ../config.ci
- genkdmconf_COMPILE_FIRST = ../config.ci
+--- tdm/kfrontend/Makefile.am.orig
++++ tdm/kfrontend/Makefile.am
+@@ -64,3 +64,7 @@ tdm_greet_COMPILE_FIRST = ../config.ci
+ tdm_config_COMPILE_FIRST = ../config.ci
+ gentdmconf_COMPILE_FIRST = ../config.ci
  
 +
-+appsdir = $(kde_datadir)/kdm
++appsdir = $(kde_datadir)/tdm
 +apps_SCRIPTS = read_sysconfig.sh
 +

@@ -39,7 +39,7 @@ Group:          System/GUI/TDE
 Summary:        The Trinity Desktop Core Components
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 URL:            http://www.trinitydesktop.org/
-Version:        3.5.13
+Version:        R13.99
 Release:        1
 Requires:       %{name}-runtime == %{version}
 Source0:        tdebase-%{version}.tar.bz2
@@ -70,32 +70,24 @@ Source23:       sourceforge.desktop
 Source24:       devmon-automounter.sh
 Patch0:         3_5_BRANCH.diff
 Patch3:         startkde.diff
-Patch5:         media-iPod.diff
 Patch6:         ksysguardd-openslp.diff
-Patch7:         fix-kio-smb-auth.diff
-Patch8:         konsole_keytab.diff
-Patch10:        kdesud-security.diff
-Patch11:        clock-applet-style.diff
 Patch12:        dont-always-start-kaccess.diff
 Patch14:        autorun.patch
 Patch15:        artwork.diff
 # TODO
 Patch16:        kfontinst.diff
-Patch17:        nsplugin-Preference.diff
 Patch20:        ksplashml.patch
 Patch21:        media_suse.diff
 Patch22:        libkonq-kdemm.diff
 Patch39:        kdesktop_icons.diff
 Patch40:        suse_default_move.diff
 Patch44:        clock-suse-integrate.diff
-Patch45:        klipperrc.diff
 Patch46:        lock-xvkbd.diff
 Patch51:        kcontrol.diff
 Patch60:        short-menus.diff
 # from http://fred.hexbox.de/kde_patches/kmenu-search-fs20050503.diff 
 Patch61:        kmenu-search-fs20050503-fixed.diff
 Patch62:        fix-kcontrol-yast.diff
-Patch63:        quick_browser_menu.diff
 Patch64:        default_fonts.diff
 #kdm
 Patch69:        kdm-cope-with-new-grub.diff
@@ -114,13 +106,12 @@ Patch81:        ksmserver-defaulttohalt.diff
 Patch82:        fix-lockup-from-gnome-apps.diff
 Patch83:        ksmserver-suspend.diff
 Patch84:        default-kdeprintfax.diff
-Patch85:        ksmserver-tooltips.diff
 Patch88:        hide-only-showin-entries.diff
 Patch92:        kcminit-ignore-arts.diff
-Patch94:        mach_blass.diff
+# SuSE specific weird shutdown, won't patch for now
+#Patch94:        mach_blass.diff
 Patch96:        khelpcenter-gnome-support.patch
 Patch996:       khelpcenter-gnome-support-legacy.patch
-Patch98:        workaround-pdf-on64bit-nsplugin-bug.diff
 Patch99:        xcursor.diff
 Patch100:       ksysguard-slp-ratelimit.diff
 Patch104:       locale-dont-show-flag.diff
@@ -448,37 +439,27 @@ Authors:
     Uwe Gansert <uwe.gansert at SuSE dot de>
 
 %prep
-%setup -q -b 8 -b 13 -n tdebase-%{version}
+%setup -q -b 8 -b 13
 %patch0
 %patch3
-%patch5
 # causes hangs (bnc#158239)
 #%patch6
 #%patch100
-%patch7
-%patch8
-%patch10
-%patch11
 %patch12
 %patch14
 # do we really still need it ?
 #%patch16
 %patch15
-%patch17
 %patch20
 %patch21
-%patch85
 %patch39
 %patch40
 %patch44
-%patch45
 %patch46
 %patch51
-%patch63
 %patch60
 %patch64
-%patch94
-%patch98
+#%patch94
 # all the kdm changes
 %patch75
 %patch70

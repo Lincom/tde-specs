@@ -153,7 +153,7 @@ Index: kcontrol/joystick/joystick.desktop
  X-KDE-Test-Module=true
 -Icon=joystick
 +Icon=kcmjoystick
- Categories=Qt;KDE;X-KDE-settings-hardware;
+ Categories=TQt;KDE;X-KDE-settings-hardware;
 Index: kcontrol/colors/colors.desktop
 ===================================================================
 --- kcontrol/colors/colors.desktop.orig

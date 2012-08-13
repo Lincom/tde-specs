@@ -35,8 +35,8 @@ Index: kcontrol/arts/arts-start.cpp
 +    along with this program; if not, write to the Free Software
 +    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 +
-+    Permission is also granted to link this program with the Qt
-+    library, treating Qt like a library that normally accompanies the
++    Permission is also granted to link this program with the TQt
++    library, treating TQt like a library that normally accompanies the
 +    operating system kernel, whether or not that is in fact the case.
 +
 +*/

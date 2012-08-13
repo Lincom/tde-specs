@@ -1,7 +1,7 @@
-Index: kdm/backend/ctrl.c
+Index: tdm/backend/ctrl.c
 ===================================================================
---- kdm/backend/ctrl.c.orig
-+++ kdm/backend/ctrl.c
+--- tdm/backend/ctrl.c.orig
++++ tdm/backend/ctrl.c
 @@ -483,6 +483,10 @@ processCtrl( const char *string, int len
  							Reply( "nuke\t" );
  					}
@@ -13,10 +13,10 @@ Index: kdm/backend/ctrl.c
  				if ((d->displayType & d_location) == dLocal &&
  				    AnyReserveDisplays())
  					Writer( fd, cbuf, sprintf( cbuf, "reserve %d\t",
-Index: kdm/backend/greet.h
+Index: tdm/backend/greet.h
 ===================================================================
---- kdm/backend/greet.h.orig
-+++ kdm/backend/greet.h
+--- tdm/backend/greet.h.orig
++++ tdm/backend/greet.h
 @@ -125,6 +125,7 @@ from the copyright holder.
  # define SHUT_REBOOT      1	/* how */
  # define SHUT_HALT        2
@@ -25,10 +25,10 @@ Index: kdm/backend/greet.h
  # define SHUT_SCHEDULE    0	/* when; config only */
  # define SHUT_TRYNOW      1
  # define SHUT_FORCENOW    2
-Index: kdm/config.def
+Index: tdm/config.def
 ===================================================================
---- kdm/config.def.orig
-+++ kdm/config.def
+--- tdm/config.def.orig
++++ tdm/config.def
 @@ -1799,6 +1799,19 @@ Description:
   Who is allowed to shut down the system. This applies both to the
   greeter and to the command <acronym>FiFo</acronym>.
@@ -49,17 +49,17 @@ Index: kdm/config.def
  Key: AllowSdForceNow
  Type: enum
   None: no forced shutdown is allowed at all
-Index: kdm/kfrontend/kdmshutdown.cpp
+Index: tdm/kfrontend/tdmshutdown.cpp
 ===================================================================
---- kdm/kfrontend/kdmshutdown.cpp.orig
-+++ kdm/kfrontend/kdmshutdown.cpp
+--- tdm/kfrontend/tdmshutdown.cpp.orig
++++ tdm/kfrontend/tdmshutdown.cpp
 @@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fi
  
  */
  
 +#include <liblazy.h>
- #include "kdmshutdown.h"
- #include "kdm_greet.h"
+ #include "tdmshutdown.h"
+ #include "tdm_greet.h"
  
 @@ -34,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fi
  #include <kdialog.h>
@@ -272,10 +272,10 @@ Index: kdm/kfrontend/kdmshutdown.cpp
  	                            .arg( os ?
  	                                  i18n("<br>(Next boot: %1)")
  	                                  .arg( QString::fromLocal8Bit( os ) ) :
-Index: kdm/kfrontend/kdmshutdown.h
+Index: tdm/kfrontend/tdmshutdown.h
 ===================================================================
---- kdm/kfrontend/kdmshutdown.h.orig
-+++ kdm/kfrontend/kdmshutdown.h
+--- tdm/kfrontend/tdmshutdown.h.orig
++++ tdm/kfrontend/tdmshutdown.h
 @@ -67,7 +67,7 @@ class KDMShutdownBase : public FDialog,
  #else
  	static const bool willShut = true;
@@ -307,25 +307,25 @@ Index: kdm/kfrontend/kdmshutdown.h
  
  };
  
-Index: kdm/kfrontend/Makefile.am
+Index: tdm/kfrontend/Makefile.am
 ===================================================================
---- kdm/kfrontend/Makefile.am.orig
-+++ kdm/kfrontend/Makefile.am
+--- tdm/kfrontend/Makefile.am.orig
++++ tdm/kfrontend/Makefile.am
 @@ -4,7 +4,7 @@ GENKDMCONF_FLAGS =
  SUBDIRS = themer themes pics sessions
  
  AM_CPPFLAGS = -I$(srcdir)/../backend -I.. -I$(top_srcdir)/kcontrol/background \
--    -I$(top_srcdir)/kdmlib $(all_includes)
-+    -I$(top_srcdir)/kdmlib $(all_includes) $(DBUS_INCS)
+-    -I$(top_srcdir)/tdmlib $(all_includes)
++    -I$(top_srcdir)/tdmlib $(all_includes) $(DBUS_INCS)
  
- bin_PROGRAMS = kdm_config kdm_greet krootimage genkdmconf kdmctl
+ bin_PROGRAMS = tdm_config tdm_greet krootimage gentdmconf tdmctl
  
-@@ -25,7 +25,7 @@ kdm_greet_SOURCES = \
+@@ -25,7 +25,7 @@ tdm_greet_SOURCES = \
      kgreeter.cpp \
      kgapp.cpp
- kdm_greet_LDFLAGS = $(all_libraries) $(KDE_RPATH)
--kdm_greet_LDADD = themer/libkdmthemer.a $(LIB_KDEUI) $(XTESTLIB) $(LIBPOSIX4)
-+kdm_greet_LDADD = themer/libkdmthemer.a $(LIB_KDEUI) $(XTESTLIB) $(LIBPOSIX4) -llazy $(DBUS_LIBS)
+ tdm_greet_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+-tdm_greet_LDADD = themer/libtdmthemer.a $(LIB_KDEUI) $(XTESTLIB) $(LIBPOSIX4)
++tdm_greet_LDADD = themer/libtdmthemer.a $(LIB_KDEUI) $(XTESTLIB) $(LIBPOSIX4) -llazy $(DBUS_LIBS)
  
  krootimage_SOURCES = krootimage.cpp
  krootimage_LDFLAGS = $(all_libraries) $(KDE_RPATH)

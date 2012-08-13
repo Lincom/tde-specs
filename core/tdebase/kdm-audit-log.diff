@@ -1,7 +1,7 @@
-Index: kdm/backend/client.c
+Index: tdm/backend/client.c
 ===================================================================
---- kdm/backend/client.c.orig
-+++ kdm/backend/client.c
+--- tdm/backend/client.c.orig
++++ tdm/backend/client.c
 @@ -87,6 +87,14 @@ extern int loginsuccess( const char *Use
  #include "consolekit.h"
  #endif
@@ -156,14 +156,14 @@ Index: kdm/backend/client.c
  	removeAuth = 1;
  	chownCtrl( &td->ctrl, curuid );
  	endpwent();
-Index: kdm/configure.in.in
+Index: tdm/configure.in.in
 ===================================================================
---- kdm/configure.in.in.orig
-+++ kdm/configure.in.in
+--- tdm/configure.in.in.orig
++++ tdm/configure.in.in
 @@ -288,3 +288,27 @@ fi
    AC_SUBST(DBUS_LIBS)
  
- dnl AC_OUTPUT(kdm/kfrontend/sessions/kde.desktop)
+ dnl AC_OUTPUT(tdm/kfrontend/sessions/kde.desktop)
 +
 +
 +AC_ARG_WITH(libaudit,

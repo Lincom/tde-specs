@@ -1,7 +1,7 @@
-Index: kdm/backend/Makefile.am
+Index: tdm/backend/Makefile.am
 ===================================================================
---- kdm/backend/Makefile.am.orig
-+++ kdm/backend/Makefile.am
+--- tdm/backend/Makefile.am.orig
++++ tdm/backend/Makefile.am
 @@ -1,5 +1,6 @@
  # forcibly remove thread-related defines & flags
  AUTOMAKE_OPTIONS = foreign

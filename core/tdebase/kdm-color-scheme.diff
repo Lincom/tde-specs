@@ -1,7 +1,7 @@
-Index: kdm/kfrontend/kgapp.cpp
+Index: tdm/kfrontend/kgapp.cpp
 ===================================================================
---- kdm/kfrontend/kgapp.cpp.orig
-+++ kdm/kfrontend/kgapp.cpp
+--- tdm/kfrontend/kgapp.cpp.orig
++++ tdm/kfrontend/kgapp.cpp
 @@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fi
  #include <qtimer.h>
  #include <qcursor.h>

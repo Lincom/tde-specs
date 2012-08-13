@@ -1,7 +1,7 @@
-Index: kdm/kfrontend/kfdialog.cpp
+Index: tdm/kfrontend/kfdialog.cpp
 ===================================================================
---- kdm/kfrontend/kfdialog.cpp.orig
-+++ kdm/kfrontend/kfdialog.cpp
+--- tdm/kfrontend/kfdialog.cpp.orig
++++ tdm/kfrontend/kfdialog.cpp
 @@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fi
  #include <klocale.h>
  #include <kpushbutton.h>
@@ -16,7 +16,7 @@ Index: kdm/kfrontend/kfdialog.cpp
  	QLabel *label2 = new QLabel( text, this );
 +	QRect d = KGlobalSettings::desktopGeometry(this);
 +	if ( label2->fontMetrics().size( 0, text).width() > d.width() * 3 / 5) 
-+		label2->setAlignment(Qt::WordBreak | Qt::AlignAuto );
++		label2->setAlignment(TQt::WordBreak | TQt::AlignAuto );
  	KPushButton *button = new KPushButton( KStdGuiItem::ok(), this );
  	button->setDefault( true );
  	button->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );

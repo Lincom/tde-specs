@@ -4,9 +4,9 @@ Index: kcontrol/clock/tzone.cpp
 +++ kcontrol/clock/tzone.cpp
 @@ -27,12 +27,16 @@
  
- #include <qlabel.h>
- #include <qfile.h>
-+#include <qregexp.h>
+ #include <tqlabel.h>
+ #include <tqfile.h>
++#include <tqregexp.h>
  
  #include <kdebug.h>
  #include <klocale.h>
@@ -19,68 +19,71 @@ Index: kcontrol/clock/tzone.cpp
  
  //#include "xpm/world.xpm"
  #include "tzone.h"
-@@ -55,6 +59,8 @@ Tzone::Tzone(QWidget * parent, const cha
-     connect( tzonelist, SIGNAL(selectionChanged()), SLOT(handleZoneChange()) );
+@@ -55,6 +59,8 @@ Tzone::Tzone(TQWidget * parent, const ch
+     connect( tzonelist, TQT_SIGNAL(selectionChanged()), TQT_SLOT(handleZoneChange()) );
  
-     m_local = new QLabel(this);
+     m_local = new TQLabel(this);
 +    
 +    setupSuseTimezone();
  
      load();
  
-@@ -158,28 +164,38 @@ void Tzone::save()
+@@ -158,28 +164,36 @@ void Tzone::save()
  
-         QString val = selectedzone;
+         TQString val = selectedzone;
  #else
--        QFile fTimezoneFile("/etc/timezone");
-+        QString tz = "/usr/share/zoneinfo/" + selectedzone;
- 
--        if (fTimezoneFile.open(IO_WriteOnly | IO_Truncate) )
-+        kdDebug() << "Set time zone " << tz << endl;
+-        TQFile fTimezoneFile("/etc/timezone");
++        TQString tz = "/usr/share/zoneinfo/" + selectedzone;
 +        
 +        writeSuseTimezone( selectedzone );
-+
+ 
+-        if (fTimezoneFile.open(IO_WriteOnly | IO_Truncate) )
 +        if( !KStandardDirs::findExe( "zic" ).isEmpty())
          {
--            QTextStream t(&fTimezoneFile);
+-            TQTextStream t(&fTimezoneFile);
 -            t << selectedzone;
 -            fTimezoneFile.close();
 +            KProcess proc;
 +            proc << "zic" << "-l" << selectedzone;
 +            proc.start( KProcess::Block );
          }
-+        else
++		else
 +        {
-+            QFile fTimezoneFile("/etc/timezone");
- 
--        QString tz = "/usr/share/zoneinfo/" + selectedzone;
--
--        kdDebug() << "Set time zone " << tz << endl;
++            TQFile fTimezoneFile("/etc/timezone");
 +            if (fTimezoneFile.open(IO_WriteOnly | IO_Truncate) )
 +            {
-+                QTextStream t(&fTimezoneFile);
++                TQTextStream t(&fTimezoneFile);
 +                t << selectedzone;
 +                fTimezoneFile.close();
 +            }
  
--	if (!QFile::remove("/etc/localtime"))
+-        TQString tz = "/usr/share/zoneinfo/" + selectedzone;
+-
+-        kdDebug() << "Set time zone " << tz << endl;
+-
+-	if (!TQFile::remove("/etc/localtime"))
 -	{
-+    	if (!QFile::remove("/etc/localtime"))
-+    	    {
- 		//After the KDE 3.2 release, need to add an error message
+-		//After the KDE 3.2 release, need to add an error message
 -	}
 -	else
-+	    }
-+	    else
- 		if (!KIO::NetAccess::file_copy(KURL(tz),KURL("/etc/localtime")))
- 			KMessageBox::error( 0,  i18n("Error setting new timezone."),
-                         		    i18n("Timezone Error"));
+-		if (!KIO::NetAccess::file_copy(KURL(tz),KURL("/etc/localtime")))
+-			KMessageBox::error( 0,  i18n("Error setting new timezone."),
+-                        		    i18n("Timezone Error"));
 -
-+        }
-         QString val = ":" + tz;
++			if (!TQFile::remove("/etc/localtime"))
++			{
++				//After the KDE 3.2 release, need to add an error message
++			}
++			else {
++				if (!KIO::NetAccess::file_copy(KURL(tz),KURL("/etc/localtime")))
++					KMessageBox::error( 0,  i18n("Error setting new timezone."),
++				                		    i18n("Timezone Error"));
++            }
++		}
+         TQString val = ":" + tz;
  #endif // !USE_SOLARIS
  
-@@ -198,3 +214,58 @@ void Tzone::save()
+@@ -198,3 +212,58 @@ void Tzone::save()
  
      currentZone();
  }
@@ -150,34 +153,34 @@ Index: kcontrol/clock/tzone.h
 +  void setupSuseTimezone();
 +  void writeSuseTimezone( QString timezone );
    KTimezones m_zoneDb;
-   QLabel *m_local;
+   TQLabel *m_local;
    KTimezoneWidget *tzonelist;
 Index: kcontrol/clock/dtime.h
 ===================================================================
 --- kcontrol/clock/dtime.h.orig
 +++ kcontrol/clock/dtime.h
-@@ -65,6 +65,9 @@ signals:
+@@ -66,6 +66,9 @@ signals:
    void	timeout();
    void	set_time();
-   void	changeDate(QDate);
+   void	changeDate(TQDate);
 +#if 1
-+  void configureTimeServer();
++  void	configureTimeServer();
 +#endif
  
  private:
    void	findNTPutility();
-@@ -72,7 +75,11 @@ private:
+@@ -73,7 +76,11 @@ private:
  
-   QWidget*	privateLayoutWidget;
-   QCheckBox	*setDateTimeAuto;
+   TQWidget*	privateLayoutWidget;
+   TQCheckBox	*setDateTimeAuto;
 +#if 1
-+  QPushButton   *timeServerConfigure;
++  TQPushButton	*timeServerConfigure;
 +#else
-   QComboBox	*timeServerList;
+   TQComboBox	*timeServerList;
 +#endif
  
    KDatePicker	*cal;
-   QComboBox	*month;
+   TQComboBox	*month;
 Index: kcontrol/clock/dtime.cpp
 ===================================================================
 --- kcontrol/clock/dtime.cpp.orig
@@ -190,34 +193,35 @@ Index: kcontrol/clock/dtime.cpp
  
  #include "dtime.h"
  #include "dtime.moc"
-@@ -74,6 +75,18 @@ Dtime::Dtime(QWidget * parent, const cha
-   connect(setDateTimeAuto, SIGNAL(toggled(bool)), SLOT(configChanged()));
+@@ -73,6 +74,19 @@ Dtime::Dtime(TQWidget * parent, const ch
+   connect(setDateTimeAuto, TQT_SIGNAL(toggled(bool)), this, TQT_SLOT(serverTimeCheck()));
+   connect(setDateTimeAuto, TQT_SIGNAL(toggled(bool)), TQT_SLOT(configChanged()));
    layout1->addWidget( setDateTimeAuto );
- 
++  
 +#if 1
 +  // simply add a pushbutton that'll invoke the yast module
 +  ntpUtility = KStandardDirs::findExe( "rcntp");
-+  timeServerConfigure = new QPushButton( i18n( "Configure" ), privateLayoutWidget, "timeServerConfigure" );
-+  connect(timeServerConfigure, SIGNAL(clicked()), SLOT(configChanged()));
-+  connect(timeServerConfigure, SIGNAL(clicked()), SLOT(configureTimeServer()));
-+  connect(setDateTimeAuto, SIGNAL(toggled(bool)), timeServerConfigure, SLOT(setEnabled(bool)));
++  timeServerConfigure = new TQPushButton( i18n( "Configure" ), privateLayoutWidget, "timeServerConfigure" );
++  connect(timeServerConfigure, TQT_SIGNAL(clicked()), TQT_SLOT(configChanged()));
++  connect(timeServerConfigure, TQT_SIGNAL(clicked()), TQT_SLOT(configureTimeServer()));
++  connect(setDateTimeAuto, TQT_SIGNAL(toggled(bool)), timeServerConfigure, TQT_SLOT(setEnabled(bool)));
 +  timeServerConfigure->setEnabled(false);
 +  layout1->addWidget( timeServerConfigure );
 +  if( ntpUtility.isEmpty())
 +    privateLayoutWidget->hide();
 +#else
-   timeServerList = new QComboBox( false, privateLayoutWidget, "timeServerList" );
-   connect(timeServerList, SIGNAL(activated(int)), SLOT(configChanged()));
-   connect(timeServerList, SIGNAL(textChanged(const QString &)), SLOT(configChanged()));
-@@ -82,6 +95,7 @@ Dtime::Dtime(QWidget * parent, const cha
+ 
+   timeServerList = new TQComboBox( false, privateLayoutWidget, "timeServerList" );
+   connect(timeServerList, TQT_SIGNAL(activated(int)), TQT_SLOT(configChanged()));
+@@ -82,6 +96,7 @@ Dtime::Dtime(TQWidget * parent, const ch
    timeServerList->setEditable(true);
    layout1->addWidget( timeServerList );
    findNTPutility();
 +#endif
  
    // Date box
-   QGroupBox* dateBox = new QGroupBox( this, "dateBox" );
-@@ -179,7 +193,11 @@ Dtime::Dtime(QWidget * parent, const cha
+   TQGroupBox* dateBox = new TQGroupBox( this, "dateBox" );
+@@ -179,7 +194,11 @@ Dtime::Dtime(TQWidget * parent, const ch
        hour->setEnabled(false);
        minute->setEnabled(false);
        second->setEnabled(false);
@@ -229,7 +233,7 @@ Index: kcontrol/clock/dtime.cpp
        setDateTimeAuto->setEnabled(false);
      }
    kclock->setEnabled(false);
-@@ -241,6 +259,15 @@ void Dtime::configChanged(){
+@@ -241,6 +260,15 @@ void Dtime::configChanged(){
  void Dtime::load()
  {
    KConfig config("kcmclockrc", true, false);
@@ -243,17 +247,17 @@ Index: kcontrol/clock/dtime.cpp
 +  }
 +#else
    config.setGroup("NTP");
-   timeServerList->insertStringList(QStringList::split(',', config.readEntry("servers",
+   timeServerList->insertStringList(TQStringList::split(',', config.readEntry("servers",
      i18n("Public Time Server (pool.ntp.org),\
-@@ -249,6 +276,7 @@ europe.pool.ntp.org,\
+@@ -249,6 +277,7 @@ europe.pool.ntp.org,\
  north-america.pool.ntp.org,\
  oceania.pool.ntp.org"))));
    setDateTimeAuto->setChecked(config.readBoolEntry("enabled", false));
 +#endif
  
    // Reset to the current date and time
-   time = QTime::currentTime();
-@@ -264,6 +292,7 @@ oceania.pool.ntp.org"))));
+   time = TQTime::currentTime();
+@@ -264,6 +293,7 @@ oceania.pool.ntp.org"))));
  void Dtime::save()
  {
    KConfig config("kcmclockrc", false, false);
@@ -261,7 +265,7 @@ Index: kcontrol/clock/dtime.cpp
    config.setGroup("NTP");
  
    // Save the order, but don't duplicate!
-@@ -301,7 +330,9 @@ void Dtime::save()
+@@ -301,7 +331,9 @@ void Dtime::save()
          kdDebug() << "Set date from time server " << timeServer.latin1() << " success!" << endl;
      }
    }
@@ -272,7 +276,7 @@ Index: kcontrol/clock/dtime.cpp
      // User time setting
      KProcess c_proc;
  
-@@ -356,6 +387,13 @@ void Dtime::timeout()
+@@ -356,6 +388,13 @@ void Dtime::timeout()
    kclock->setTime( time );
  }
  
@@ -283,6 +287,6 @@ Index: kcontrol/clock/dtime.cpp
 +  proc.start( KProcess::DontCare );
 +}
 +
- QString Dtime::quickHelp() const
+ TQString Dtime::quickHelp() const
  {
    return i18n("<h1>Date & Time</h1> This control module can be used to set the system date and"

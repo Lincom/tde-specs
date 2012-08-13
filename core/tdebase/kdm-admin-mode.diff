@@ -1,7 +1,7 @@
-Index: kdm/config.def
+Index: tdm/config.def
 ===================================================================
---- kdm/config.def.orig
-+++ kdm/config.def
+--- tdm/config.def.orig
++++ tdm/config.def
 @@ -2002,6 +2002,17 @@ Description:
   Specify the widget style for the greeter. Empty means to use the
   built-in default which currently is <literal>Plastik</literal>.
@@ -20,22 +20,22 @@ Index: kdm/config.def
  Key: ColorScheme
  Type: string
  Default: ""
-Index: kdm/kfrontend/Makefile.am
+Index: tdm/kfrontend/Makefile.am
 ===================================================================
---- kdm/kfrontend/Makefile.am.orig
-+++ kdm/kfrontend/Makefile.am
-@@ -21,6 +21,7 @@ kdm_greet_SOURCES = \
+--- tdm/kfrontend/Makefile.am.orig
++++ tdm/kfrontend/Makefile.am
+@@ -21,6 +21,7 @@ tdm_greet_SOURCES = \
      kchooser.cpp \
      kgverify.cpp \
-     kdmshutdown.cpp \
-+    kdmadmindialog.cpp \
+     tdmshutdown.cpp \
++    tdmadmindialog.cpp \
      kgreeter.cpp \
      kgapp.cpp
- kdm_greet_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-Index: kdm/kfrontend/kdmadmindialog.cpp
+ tdm_greet_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+Index: tdm/kfrontend/tdmadmindialog.cpp
 ===================================================================
 --- /dev/null
-+++ kdm/kfrontend/kdmadmindialog.cpp
++++ tdm/kfrontend/tdmadmindialog.cpp
 @@ -0,0 +1,176 @@
 +    /*
 +
@@ -61,10 +61,10 @@ Index: kdm/kfrontend/kdmadmindialog.cpp
 +
 +    */
 +
-+#include "kdmadmindialog.h"
-+#include "kdmconfig.h"
++#include "tdmadmindialog.h"
++#include "tdmconfig.h"
 +#include "kgdialog.h"
-+#include "kdm_greet.h"
++#include "tdm_greet.h"
 +#include <stdlib.h>
 +
 +#include <kapplication.h>
@@ -212,11 +212,11 @@ Index: kdm/kfrontend/kdmadmindialog.cpp
 +}
 +
 +
-+#include "kdmadmindialog.moc"
-Index: kdm/kfrontend/kdmadmindialog.h
++#include "tdmadmindialog.moc"
+Index: tdm/kfrontend/tdmadmindialog.h
 ===================================================================
 --- /dev/null
-+++ kdm/kfrontend/kdmadmindialog.h
++++ tdm/kfrontend/tdmadmindialog.h
 @@ -0,0 +1,70 @@
 +    /*
 +
@@ -288,18 +288,18 @@ Index: kdm/kfrontend/kdmadmindialog.h
 +};
 +
 +#endif
-Index: kdm/kfrontend/kgreeter.cpp
+Index: tdm/kfrontend/kgreeter.cpp
 ===================================================================
---- kdm/kfrontend/kgreeter.cpp.orig
-+++ kdm/kfrontend/kgreeter.cpp
+--- tdm/kfrontend/kgreeter.cpp.orig
++++ tdm/kfrontend/kgreeter.cpp
 @@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fi
- #include "kdmconfig.h"
- #include "kdmclock.h"
- #include "kdm_greet.h"
-+#include "kdmadmindialog.h"
- #include "themer/kdmthemer.h"
- #include "themer/kdmitem.h"
- #include "themer/kdmlabel.h"
+ #include "tdmconfig.h"
+ #include "tdmclock.h"
+ #include "tdm_greet.h"
++#include "tdmadmindialog.h"
+ #include "themer/tdmthemer.h"
+ #include "themer/tdmitem.h"
+ #include "themer/tdmlabel.h"
 @@ -509,7 +510,7 @@ KGreeter::insertSessions()
  	for (char **dit = _sessionsDirs; *dit; ++dit) {
  		QStringList ents = QDir( *dit ).entryList();
@@ -365,10 +365,10 @@ Index: kdm/kfrontend/kgreeter.cpp
 +}
 +
  #include "kgreeter.moc"
-Index: kdm/kfrontend/kgreeter.h
+Index: tdm/kfrontend/kgreeter.h
 ===================================================================
---- kdm/kfrontend/kgreeter.h.orig
-+++ kdm/kfrontend/kgreeter.h
+--- tdm/kfrontend/kgreeter.h.orig
++++ tdm/kfrontend/kgreeter.h
 @@ -146,6 +146,7 @@ class KThemedGreeter : public KGreeter {
  	void slotThemeActivated( const QString &id );
  	void slotSessMenu();
@@ -386,22 +386,22 @@ Index: kdm/kfrontend/kgreeter.h
  
    public: // from KGVerifyHandler
  	virtual void verifyFailed();
-Index: kdm/kfrontend/sessions/Makefile.am
+Index: tdm/kfrontend/sessions/Makefile.am
 ===================================================================
---- kdm/kfrontend/sessions/Makefile.am.orig
-+++ kdm/kfrontend/sessions/Makefile.am
+--- tdm/kfrontend/sessions/Makefile.am.orig
++++ tdm/kfrontend/sessions/Makefile.am
 @@ -1,6 +1,6 @@
- sessionsdir = $(kde_datadir)/kdm/sessions
+ sessionsdir = $(kde_datadir)/tdm/sessions
  sessions_DATA = \
 -    kde.desktop gnome.desktop \
 +    admin.desktop kde.desktop gnome.desktop \
      9wm.desktop \
      aewm++.desktop \
      aewm.desktop \
-Index: kdm/kfrontend/sessions/admin.desktop
+Index: tdm/kfrontend/sessions/admin.desktop
 ===================================================================
 --- /dev/null
-+++ kdm/kfrontend/sessions/admin.desktop
++++ tdm/kfrontend/sessions/admin.desktop
 @@ -0,0 +1,7 @@
 +[Desktop Entry]
 +Encoding=UTF-8
@@ -410,10 +410,10 @@ Index: kdm/kfrontend/sessions/admin.desktop
 +TryExec=YaSTadminSession
 +Name=admin
 +Comment=Yast Admin Session
-Index: kdm/kfrontend/themer/kdmlabel.cpp
+Index: tdm/kfrontend/themer/tdmlabel.cpp
 ===================================================================
---- kdm/kfrontend/themer/kdmlabel.cpp.orig
-+++ kdm/kfrontend/themer/kdmlabel.cpp
+--- tdm/kfrontend/themer/tdmlabel.cpp.orig
++++ tdm/kfrontend/themer/tdmlabel.cpp
 @@ -214,6 +214,7 @@ static const struct {
  	{ "language",           I18N_NOOP("&Language") },
  	{ "session",            I18N_NOOP("Session &Type") },

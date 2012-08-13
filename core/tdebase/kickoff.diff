@@ -2225,7 +2225,7 @@ Makefile.in
 +
 +    if (e->type() == QEvent::Wheel && raiseWidget )
 +    {
-+        // due to an ugly Qt bug we have to kill wheel events
++        // due to an ugly TQt bug we have to kill wheel events
 +        // that cause focus switches
 +        r = true;
 +    }
@@ -2307,8 +2307,8 @@ Makefile.in
 +
 +        m_tabBar->deactivateTabs(true);
 +
-+        p.setBrush( Qt::white );
-+        p.setPen( Qt::NoPen );
++        p.setBrush( TQt::white );
++        p.setPen( TQt::NoPen );
 +
 +        if ( m_orientation == BottomUp ) {
 +            search_tab_center.convertFromImage( search_tab_center.convertToImage().scale(search_tab_center.width(), m_searchFrame->height()));
@@ -2363,7 +2363,7 @@ Makefile.in
 +    }
 +
 +
-+#warning Qtab fixme
++#warning TQtab fixme
 +#if 0
 +    else if (raiseWidget == m_systemView)
 +	frame = m_system;
@@ -2747,7 +2747,7 @@ Makefile.in
 +
 +            int newId = insertItem(iconset, groupCaption, m, id++);
 +            entryMap_.insert(newId, static_cast<KSycocaEntry*>(g));
-+            // We have to delete the sub menu our selves! (See Qt docs.)
++            // We have to delete the sub menu our selves! (See TQt docs.)
 +            subMenus.append(m);
 +#endif
 +        }
@@ -3263,7 +3263,7 @@ Makefile.in
 +
 +    m_orientation=orientation;
 +
-+    m_resizeHandle->setCursor(m_orientation == BottomUp ? Qt::sizeBDiagCursor : Qt::sizeFDiagCursor);
++    m_resizeHandle->setCursor(m_orientation == BottomUp ? TQt::sizeBDiagCursor : TQt::sizeFDiagCursor);
 +
 +    QPixmap pix;
 +    if ( m_orientation == BottomUp )
@@ -3514,7 +3514,7 @@ Makefile.in
 +    m_seenPrograms = KickerSettings::firstSeenApps();
 +    m_newInstalledPrograms.clear();
 +
-+    m_currentDate = QDate::currentDate().toString(Qt::ISODate);
++    m_currentDate = QDate::currentDate().toString(TQt::ISODate);
 +
 +    bool initialize = (m_seenPrograms.count() == 0);
 +
@@ -3576,7 +3576,7 @@ Makefile.in
 +                            else {
 +                                ++it_find;
 +                                if (*(it_find)!="-") {
-+                                   QDate date = QDate::fromString(*(it_find),Qt::ISODate);
++                                   QDate date = QDate::fromString(*(it_find),TQt::ISODate);
 +                                   if (date.daysTo(QDate::currentDate())<3) {
 +                                      if (m_newInstalledPrograms.find(s->storageId())==m_newInstalledPrograms.end())
 +                                         m_newInstalledPrograms+=s->storageId();
@@ -5601,7 +5601,7 @@ Makefile.in
 +
 +    p->setFont( font() );
 +    QFontMetrics fm = p->fontMetrics();
-+    int fw = fm.size( Qt::SingleLine|Qt::ShowPrefix, t->text() ).width();
++    int fw = fm.size( TQt::SingleLine|TQt::ShowPrefix, t->text() ).width();
 +
 +    QRect rt(r);
 +    rt.setWidth(fw);
@@ -5682,7 +5682,7 @@ Makefile.in
 +            h += 4 + s.height() + 4;
 +        QRect r = tab->rect();
 +
-+        int fw = fm.size( Qt::SingleLine|Qt::ShowPrefix, tab->text() ).width();
++        int fw = fm.size( TQt::SingleLine|TQt::ShowPrefix, tab->text() ).width();
 +        int iw = 0;
 +        if ( tab->iconSet() != 0 )
 +            iw = tab->iconSet()->pixmap( QIconSet::Large, QIconSet::Normal ).width();
@@ -6813,7 +6813,7 @@ Makefile.in
 +    XSetWindowAttributes attrs;
 +    attrs.override_redirect = True;
 +    XChangeWindowAttributes( qt_xdisplay(), winId(), CWOverrideRedirect, &attrs );
-+    setWFlags( Qt::WType_Popup );
++    setWFlags( TQt::WType_Popup );
 +}
 --- kicker/ui/mykickoffsearchinterface.h		(Revision 0)
 +++ kicker/ui/mykickoffsearchinterface.h		(Revision 849791)
@@ -8341,7 +8341,7 @@ Makefile.in
 +    }
 +
 +    if ( link_cursor )
-+        setCursor( Qt::PointingHandCursor );
++        setCursor( TQt::PointingHandCursor );
 +    else
 +        unsetCursor();
 +
@@ -8419,7 +8419,7 @@ Makefile.in
 +          mask = *pix.mask();
 +      else {
 +	  mask.resize(pix.size());
-+	  mask.fill(Qt::color1);
++	  mask.fill(TQt::color1);
 +      }
 +
 +      bitBlt( &mask, pix.width()-add.width(), pix.height()-add.height(), add.mask(), 0, 0, add.width(), add.height(), OrROP );
@@ -8815,7 +8815,7 @@ media_watcher_skel.cpp
 +    m_mouseInside = false;
 +    m_drag = false;
 +
-+    setIconAlignment((Qt::AlignmentFlags)(AlignTop|AlignRight));
++    setIconAlignment((TQt::AlignmentFlags)(AlignTop|AlignRight));
 +    setAcceptDrops(true);
 +    setIcon("kmenu-suse");
 +    setDrawArrow(false);
@@ -8848,14 +8848,14 @@ media_watcher_skel.cpp
 +    QImage img = m_active_pixmap.convertToImage();
 +
 +    for (int i = 0; i < img.width(); ++i) {
-+        QRgb rgb = img.pixel(orientation() == Qt::Horizontal ? img.width() - i - 1 :
++        QRgb rgb = img.pixel(orientation() == TQt::Horizontal ? img.width() - i - 1 :
 +                    i, 2);
 +
 +        if (qGreen(rgb) > 0x50)
 +            return rgb;
 +    }
 +
-+    return img.pixel( orientation() == Qt::Horizontal ? img.width() - 2 : 2, 2);
++    return img.pixel( orientation() == TQt::Horizontal ? img.width() - 2 : 2, 2);
 +}
 +
 +void KNewButton::show()
@@ -8886,19 +8886,19 @@ media_watcher_skel.cpp
 +
 +    switch (d) {
 +    case KPanelApplet::Left:
-+        setIconAlignment((Qt::AlignmentFlags)(AlignTop|AlignLeft));
++        setIconAlignment((TQt::AlignmentFlags)(AlignTop|AlignLeft));
 +        m_movie = new QMovie(locate("data", "kicker/pics/kmenu_vertical.mng"));
 +        break;
 +    case KPanelApplet::Right:
-+        setIconAlignment((Qt::AlignmentFlags)(AlignTop|AlignRight));
++        setIconAlignment((TQt::AlignmentFlags)(AlignTop|AlignRight));
 +        m_movie = new QMovie(locate("data", "kicker/pics/kmenu_vertical.mng"));
 +        break;
 +    case KPanelApplet::Up:
-+        setIconAlignment((Qt::AlignmentFlags)(AlignTop|AlignHCenter));
++        setIconAlignment((TQt::AlignmentFlags)(AlignTop|AlignHCenter));
 +        m_movie = new QMovie(locate("data", "kicker/pics/kmenu_basic.mng"));
 +        break;
 +    case KPanelApplet::Down:
-+        setIconAlignment((Qt::AlignmentFlags)(AlignBottom|AlignHCenter));
++        setIconAlignment((TQt::AlignmentFlags)(AlignBottom|AlignHCenter));
 +        m_movie = new QMovie(locate("data", "kicker/pics/kmenu_flipped.mng"));
 +    }
 +
@@ -8970,7 +8970,7 @@ media_watcher_skel.cpp
 +        if (rect().contains(mapFromGlobal(me->globalPos())))
 +        {
 +            if (m_pressedDuringPopup && m_popup && m_openTimer != -1
-+                    && (me->button() & Qt::LeftButton) )
++                    && (me->button() & TQt::LeftButton) )
 +                return true;
 +        }
 +    }
@@ -9162,7 +9162,7 @@ media_watcher_skel.cpp
 +    // I wish KMenu would properly done itself when it closes. But it doesn't.
 +
 +    bool useEffect = true; // could be QApplication::isEffectEnabled()
-+    useEffect = false; // too many Qt bugs to be useful
++    useEffect = false; // too many TQt bugs to be useful
 +    if (m_drag)
 +	useEffect = false;
 +

@@ -1,7 +1,7 @@
-Index: kdm/backend/bootman.c
+Index: tdm/backend/bootman.c
 ===================================================================
---- kdm/backend/bootman.c.orig
-+++ kdm/backend/bootman.c
+--- tdm/backend/bootman.c.orig
++++ tdm/backend/bootman.c
 @@ -132,19 +132,14 @@ setGrub( const char *opt, SdRec *sdr )
  static void
  commitGrub( void )

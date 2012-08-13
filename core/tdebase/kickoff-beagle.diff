@@ -432,7 +432,7 @@
 +    // FIXME: error check timestring format
 +    if (timestring.isNull () || timestring.stripWhiteSpace () == "" || timestring.length() != 8 )
 +        return beagle_timestamp_new_from_unix_time (QDateTime::currentDateTime ().toTime_t ());
-+    //QDateTime dt = QDateTime::fromString (timestring, Qt::ISODate);
++    //QDateTime dt = QDateTime::fromString (timestring, TQt::ISODate);
 +    struct tm tm_time;
 +    time_t timet_time;
 +    time (&timet_time);

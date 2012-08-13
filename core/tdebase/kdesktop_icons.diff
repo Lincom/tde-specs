@@ -1,67 +1,9 @@
-Index: kdesktop/KDesktopIface.h
-===================================================================
---- kdesktop/KDesktopIface.h.orig
-+++ kdesktop/KDesktopIface.h
-@@ -107,6 +107,35 @@ k_dcop:
-      * space for desktop icons
-      */
-     virtual void desktopIconsAreaChanged(const QRect &area, int screen) = 0;
-+
-+    /**
-+     * Find the next free place for a not yet existing icon, so it fits
-+     * in the user arrangement. Basicly prepare for icons to be moved in.
-+     * It will try to find a place in the virtual grid near col,row
-+     * where no other icon is.
-+     *
-+     * If you specify -1 for row or column, it will try to find the next
-+     * free room where no other icon follows. E.g. if you specify column
-+     * = -1 and row = 0, kdesktop will find the next vertical placement
-+     * so that the icon appears at the end of the existing icons preferable
-+     * in the first column. If the first column is full, it will find the
-+     * next free room in the second column.
-+     *
-+     * If you specify both column and row, kdesktop won't care for aligning,
-+     * or surrounding icons, but try to find the free place near the given
-+     * grid place (e.g. specify 0,0 to find the nearest place in the left
-+     * upper corner).
-+     */
-+    virtual QPoint findPlaceForIcon( int column, int row) = 0;
-+
-+    /// copy the desktop file in the Desktop and place it at x, y
-+    virtual void addIcon(const QString &url, int x, int y) = 0;
-+
-+    /// same with specific destination
-+    virtual void addIcon(const QString &url, const QString &dest, int x, int y) = 0;
-+
-+    /// remove the desktop file (either full path or relative)
-+    virtual void removeIcon(const QString &dest) = 0;
- };
- 
- #endif
 Index: kdesktop/desktop.cc
 ===================================================================
 --- kdesktop/desktop.cc.orig
 +++ kdesktop/desktop.cc
-@@ -32,6 +32,9 @@
- #include <unistd.h>
- #include <kcolordrag.h>
- #include <kurldrag.h>
-+#include <stdlib.h>
-+#include <kio/job.h>
-+#include <qfile.h>
- 
- #include <qdir.h>
- #include <qevent.h>
-@@ -58,6 +61,7 @@
- #include <kglobalsettings.h>
- #include <kpopupmenu.h>
- #include <kapplication.h>
-+#include <kdirlister.h>
- // Create the equivalent of KAccelBase::connectItem
- // and then remove this include and fix reconnects in initRoot() -- ellis
- //#include <kaccelbase.h>
-@@ -983,4 +987,47 @@ bool KDesktop::event(QEvent * e)
-     return QWidget::event(e);
+@@ -1188,4 +1188,47 @@ void KDesktop::removeIcon(const TQString
+         m_pIconView->update( dest );
  }
  
 +QPoint KDesktop::findPlaceForIcon( int column, int row )
@@ -112,9 +54,9 @@ Index: kdesktop/desktop.h
 ===================================================================
 --- kdesktop/desktop.h.orig
 +++ kdesktop/desktop.h
-@@ -164,6 +164,11 @@ protected:
-   virtual void setIconsEnabled( bool enable );
-   virtual bool event ( QEvent * e );
+@@ -179,6 +179,11 @@ protected:
+   virtual void addIcon(const TQString &url, const TQString &dest, int x, int y);
+   virtual void removeIcon(const TQString &url);
  
 +  virtual QPoint findPlaceForIcon( int column, int row);
 +  virtual void addIcon(const QString &url, int x, int y);
@@ -128,26 +70,7 @@ Index: kdesktop/kdiconview.cc
 ===================================================================
 --- kdesktop/kdiconview.cc.orig
 +++ kdesktop/kdiconview.cc
-@@ -962,6 +962,18 @@ void KDIconView::slotNewItems( const KFi
-   kdDebug(1214) << "KDIconView::slotNewItems count=" << entries.count() << endl;
-   KFileItemListIterator it(entries);
-   KFileIVI* fileIVI = 0L;
-+
-+  if (m_nextItemPos.isNull() && !m_dotDirectory)  {
-+      // Not found, we'll need to save the new pos
-+      kdDebug(1214)<<"Neither a  drop position stored nor m_dotDirectory set"<<endl;
-+      m_dotDirectory = new KSimpleConfig( dotDirectoryPath(), true );
-+      // recursion
-+      slotNewItems( entries );
-+      delete m_dotDirectory;
-+      m_dotDirectory = 0;
-+      return;
-+  }
-+
-   for (; it.current(); ++it)
-   {
-     KURL url = it.current()->url();
-@@ -1026,15 +1038,6 @@ void KDIconView::slotNewItems( const KFi
+@@ -1141,15 +1141,6 @@ void KDIconView::slotNewItems( const KFi
              kdDebug(1214)<<"Using saved position"<<endl;
          }
        }
@@ -163,9 +86,9 @@ Index: kdesktop/kdiconview.cc
      }
    }
  
-@@ -1638,6 +1641,98 @@ void KDIconView::moveToFreePosition(QIco
+@@ -1855,6 +1846,98 @@ TQPoint KDIconView::findPlaceForIcon( in
+     return TQPoint(0, 0);
  }
- 
  
 +QPoint KDIconView::findPlaceForIconCol( int column, int dx, int dy)
 +{
@@ -262,34 +185,36 @@ Index: kdesktop/kdiconview.cc
  void KDIconView::saveIconPositions()
  {
    kdDebug(1214) << "KDIconView::saveIconPositions" << endl;
-@@ -1665,4 +1760,11 @@ void KDIconView::saveIconPositions()
-   m_dotDirectory->sync();
- }
- 
+@@ -1886,6 +1969,13 @@ void KDIconView::update( const TQString
+ {
+ 	if (m_dirLister)
+ 		m_dirLister->updateDirectory( _url );
++}
++
++
 +void KDIconView::update( const QString &_url )
 +{
 +	if (m_dirLister)
 +		m_dirLister->updateDirectory( _url );
-+}
-+
-+
- #include "kdiconview.moc"
+ }
+ 
+ 
 Index: kdesktop/kdiconview.h
 ===================================================================
 --- kdesktop/kdiconview.h.orig
 +++ kdesktop/kdiconview.h
-@@ -73,6 +73,8 @@ public:
+@@ -67,6 +67,8 @@ public:
  
-     QStringList selectedURLs();
+     void rearrangeIcons( SortCriterion sc, bool bSortDirectoriesFirst);
  
 +    void update( const QString &url );
 +
      /**
-      * Save the icon positions
+      * Re-arrange the desktop icons without confirmation.
       */
-@@ -103,6 +105,10 @@ public:
- 
-     void startDirLister();
+@@ -114,6 +116,10 @@ public:
+     TQPoint findPlaceForIconRow( int row, int dx, int dy );
+     TQPoint findPlaceForIcon( int column, int row );
  
 +    QPoint findPlaceForIconCol( int column, int dx, int dy );
 +    QPoint findPlaceForIconRow( int row, int dx, int dy );
@@ -298,14 +223,3 @@ Index: kdesktop/kdiconview.h
  protected slots:
  
      // slots connected to the icon view
-@@ -112,8 +118,9 @@ protected slots:
-     void slotMouseButtonClickedKDesktop(int _button, QIconViewItem* _item, const QPoint& _global);
-     void slotContextMenuRequested(QIconViewItem* _item, const QPoint& _global);
-     void slotEnableAction( const char * name, bool enabled );
-+public slots:
-     void slotAboutToCreate(const QPoint &pos, const QValueList<KIO::CopyInfo> &files);
--
-+protected slots:
-     void slotItemRenamed(QIconViewItem*, const QString &name);
- 
-     // slots connected to the directory lister

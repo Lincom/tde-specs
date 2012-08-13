@@ -1,7 +1,7 @@
-Index: kdm/backend/auth.c
+Index: tdm/backend/auth.c
 ===================================================================
---- kdm/backend/auth.c.orig
-+++ kdm/backend/auth.c
+--- tdm/backend/auth.c.orig
++++ tdm/backend/auth.c
 @@ -518,6 +518,7 @@ DefineLocal( FILE *file, Xauth *auth, in
  	uname( &name );
  	writeAddr( FamilyLocal, strlen( name.nodename ), name.nodename,

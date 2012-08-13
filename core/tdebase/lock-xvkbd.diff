@@ -2,126 +2,17 @@ Index: kdesktop/lock/lockprocess.cc
 ===================================================================
 --- kdesktop/lock/lockprocess.cc.orig
 +++ kdesktop/lock/lockprocess.cc
-@@ -36,6 +36,8 @@
- #include <kstdguiitem.h>
- #include <kpixmapeffect.h>
- #include <kpixmap.h>
-+#include <kwin.h>
-+#include <kwinmodule.h>
- 
- #include <qframe.h>
- #include <qlabel.h>
-@@ -93,6 +95,8 @@ static Window gVRootData = 0;
- static Atom   gXA_VROOT;
- static Atom   gXA_SCREENSAVER_VERSION;
+@@ -153,6 +153,8 @@ mForceContinualLockDisplayTimer->stop();
+ trinity_desktop_lock_autohide_lockdlg = TRUE; \
+ mHackDelayStartupTimer->stop();
  
 +extern Atom qt_wm_state;
 +
  //===========================================================================
  //
  // Screen saver handling process.  Handles screensaver window,
-@@ -108,7 +112,9 @@ LockProcess::LockProcess(bool child, boo
-       mVisibility(false),
-       mRestoreXF86Lock(false),
-       mForbidden(false),
--      mAutoLogout(false)
-+      mAutoLogout(false),
-+      mVkbdProcess(NULL),
-+      mKWinModule(NULL)
- {
-     setupSignals();
- 
-@@ -909,10 +915,14 @@ bool LockProcess::checkPass()
- {
-     if (mAutoLogout)
-         killTimer(mAutoLogoutTimerId);
-+        
-+    showVkbd();
- 
-     PasswordDlg passDlg( this, &greetPlugin);
- 
-     int ret = execDialog( &passDlg );
-+    
-+    hideVkbd();
- 
-     XWindowAttributes rootAttr;
-     XGetWindowAttributes(qt_xdisplay(), RootWindow(qt_xdisplay(),
-@@ -992,9 +1002,13 @@ bool LockProcess::x11Event(XEvent *event
- {
-     switch (event->type)
-     {
--        case KeyPress:
-         case ButtonPress:
-         case MotionNotify:
-+        case ButtonRelease:
-+            if( forwardVkbdEvent( event ))
-+                return true; // filter out
-+            // fall through
-+        case KeyPress:
-             if (mBusy || !mDialogs.isEmpty())
-                 break;
-             mBusy = true;
-@@ -1031,11 +1045,30 @@ bool LockProcess::x11Event(XEvent *event
-         case ConfigureNotify: // from SubstructureNotifyMask on the root window
-             if(event->xconfigure.event == qt_xrootwin())
-                 stayOnTop();
-+            for( QValueList< VkbdWindow >::Iterator it = mVkbdWindows.begin();
-+                 it != mVkbdWindows.end();
-+                 ++it ) {
-+                if( (*it).id == event->xconfigure.window ) {
-+                    (*it).rect = QRect( event->xconfigure.x, event->xconfigure.y,
-+                        event->xconfigure.width, event->xconfigure.height );
-+                    break;
-+                }
-+            }
-             break;
-         case MapNotify: // from SubstructureNotifyMask on the root window
-+            windowAdded( event->xmap.window, false );
-             if( event->xmap.event == qt_xrootwin())
-                 stayOnTop();
-             break;
-+        case DestroyNotify:
-+            for( QValueList< VkbdWindow >::Iterator it = mVkbdWindows.begin();
-+                 it != mVkbdWindows.end();
-+                 ++it )
-+                if( (*it).id == event->xdestroywindow.window ) {
-+                    mVkbdWindows.remove( it );
-+                    break;
-+            }
-+            break;
-     }
- 
-     // We have grab with the grab window being the root window.
-@@ -1060,17 +1093,24 @@ bool LockProcess::x11Event(XEvent *event
- 
- void LockProcess::stayOnTop()
- {
--    if(!mDialogs.isEmpty())
-+    if(!mDialogs.isEmpty() || !mVkbdWindows.isEmpty())
-     {
-         // this restacking is written in a way so that
-         // if the stacking positions actually don't change,
-         // all restacking operations will be no-op,
-         // and no ConfigureNotify will be generated,
-         // thus avoiding possible infinite loops
--        XRaiseWindow( qt_xdisplay(), mDialogs.first()->winId()); // raise topmost
-+        if( !mVkbdWindows.isEmpty())
-+            XRaiseWindow( qt_xdisplay(), mVkbdWindows.first().id );
-+        else
-+            XRaiseWindow( qt_xdisplay(), mDialogs.first()->winId()); // raise topmost
-         // and stack others below it
--        Window* stack = new Window[ mDialogs.count() + 1 ];
-+        Window* stack = new Window[ mDialogs.count() + mVkbdWindows.count() + 1 ];
-         int count = 0;
-+        for( QValueList< VkbdWindow >::ConstIterator it = mVkbdWindows.begin();
-+             it != mVkbdWindows.end();
-+             ++it )
-+            stack[ count++ ] = (*it).id;
-         for( QValueList< QWidget* >::ConstIterator it = mDialogs.begin();
-              it != mDialogs.end();
-              ++it )
-@@ -1169,4 +1209,200 @@ void LockProcess::msgBox( QMessageBox::I
-     execDialog( &box );
+@@ -2445,4 +2447,200 @@ void LockProcess::slotMouseActivity(XEve
+ 	}
  }
  
 +static int run_vkbd = -1;
@@ -321,60 +212,3 @@ Index: kdesktop/lock/lockprocess.cc
 +}
 +
  #include "lockprocess.moc"
-Index: kdesktop/lock/lockprocess.h
-===================================================================
---- kdesktop/lock/lockprocess.h.orig
-+++ kdesktop/lock/lockprocess.h
-@@ -23,6 +23,7 @@
- #include <X11/Xlib.h>
- 
- class KLibrary;
-+class KWinModule;
- 
- struct GreeterPluginHandle {
-     KLibrary *library;
-@@ -53,7 +54,7 @@ public:
- 
-     void msgBox( QMessageBox::Icon type, const QString &txt );
-     int execDialog( QDialog* dlg );
--    
-+
- public slots:
-     void quitSaver();
-     void preparePopup();
-@@ -70,6 +71,7 @@ private slots:
-     void suspend();
-     void checkDPMSActive();
-     void slotDeadTimePassed();
-+    void windowAdded( WId );
- 
- private:
-     void configure();
-@@ -93,6 +95,11 @@ private:
-     void stayOnTop();
-     void lockXF86();
-     void unlockXF86();
-+    void showVkbd();
-+    void hideVkbd();
-+    bool forwardVkbdEvent( XEvent* event );
-+    void sendVkbdFocusInOut( WId window, Time t );
-+    void windowAdded( WId window, bool managed );
-     void resume( bool force );
-     static QVariant getConf(void *ctx, const char *key, const QVariant &dflt);
- 
-@@ -125,6 +132,15 @@ private:
-     int         mAutoLogoutTimerId;
-     int         mAutoLogoutTimeout;
-     bool        mAutoLogout;
-+    KProcess*   mVkbdProcess;
-+    KWinModule* mKWinModule;
-+    struct VkbdWindow
-+        {
-+        WId id;
-+        QRect rect;
-+        };
-+    QValueList< VkbdWindow > mVkbdWindows;
-+    WId         mVkbdLastEventWindow;
- };
- 
- #endif

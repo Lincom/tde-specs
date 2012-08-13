@@ -127,15 +127,15 @@ Index: kicker/kicker/ui/k_mnu.cpp
 +    // we follow konqueror.
 +    if (!searchEdit) return KPanelMenu::keyPressEvent(e);
 +
-+    if (e->key() == Qt::Key_Slash && !searchEdit->hasFocus()) {
++    if (e->key() == TQt::Key_Slash && !searchEdit->hasFocus()) {
 +        if (indexOf(searchLineID) >=0 ) {
 +            setActiveItem(indexOf(searchLineID));
 +        }
 +    }
-+    else if (e->key() == Qt::Key_Escape && searchEdit->text().isEmpty() == false) {
++    else if (e->key() == TQt::Key_Escape && searchEdit->text().isEmpty() == false) {
 +        searchEdit->clear();
 +    }
-+    else if (e->key() == Qt::Key_Delete && !searchEdit->hasFocus() && 
++    else if (e->key() == TQt::Key_Delete && !searchEdit->hasFocus() && 
 +        searchEdit->text().isEmpty() == false)
 +    {
 +        searchEdit->clear();
@@ -204,7 +204,7 @@ Index: kicker/kicker/ui/service_mnu.cpp
 +            searchSubMenuIDs[m] = newId;
 +            // Also search the submenu name itself
 +            searchMenuItems.insert(newId);
-             // We have to delete the sub menu our selves! (See Qt docs.)
+             // We have to delete the sub menu our selves! (See TQt docs.)
              subMenus.append(m);
          }
 @@ -308,6 +315,7 @@ void PanelServiceMenu::fillMenu(KService

@@ -1,7 +1,7 @@
-Index: kdm/backend/client.c
+Index: tdm/backend/client.c
 ===================================================================
---- kdm/backend/client.c.orig
-+++ kdm/backend/client.c
+--- tdm/backend/client.c.orig
++++ tdm/backend/client.c
 @@ -1214,6 +1214,8 @@ StartClient()
  	env = setEnv( env, "PATH", curuid ? td->userPath : td->systemPath );
  	env = setEnv( env, "SHELL", p->pw_shell );

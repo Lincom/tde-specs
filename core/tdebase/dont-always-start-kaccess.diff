@@ -63,4 +63,4 @@ Index: kcontrol/access/kcmaccess.cpp
 +     return false; // don't need it
  }
  
- QString mouseKeysShortcut (Display *display) {
+ TQString mouseKeysShortcut (Display *display) {

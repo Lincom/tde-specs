@@ -16,7 +16,7 @@ Index: kcontrol/kcontrol/KControl.desktop
 @@ -93,3 +95,4 @@ Name[zu]=Indawo Yokulawula
  
  X-DCOP-ServiceType=Unique
- Categories=Qt;KDE;Core;
+ Categories=TQt;KDE;Core;
 +Keywords=control,center
 Index: kicker/libkicker/kickerSettings.kcfg
 ===================================================================

@@ -932,7 +932,7 @@ Index: kwin/kwinbindings.cpp
 +	DEF( I18N_NOOP("Window to Next Screen"),               0, 0, slotWindowToNextScreen() );
  
  	keys->insert( "Group:Desktop Switching", i18n("Desktop Switching") );
- 	DEF( I18N_NOOP("Switch to Desktop 1"),  CTRL+Qt::Key_F1, WIN+Qt::Key_F1, slotSwitchToDesktop(int) );
+ 	DEF( I18N_NOOP("Switch to Desktop 1"),  CTRL+TQt::Key_F1, WIN+TQt::Key_F1, slotSwitchToDesktop(int) );
 @@ -132,6 +141,15 @@
  	DEF( I18N_NOOP("Switch One Desktop to the Left"),      0, 0, slotSwitchDesktopLeft() );
  	DEF( I18N_NOOP("Switch One Desktop Up"),               0, 0, slotSwitchDesktopUp() );
@@ -948,4 +948,4 @@ Index: kwin/kwinbindings.cpp
 +	DEF( I18N_NOOP("Switch to Next Screen"),               0, 0, slotSwitchToNextScreen() );
  
  	keys->insert( "Group:Miscellaneous", i18n("Miscellaneous") );
- 	DEF( I18N_NOOP("Mouse Emulation"),                     ALT+Qt::Key_F12, 0, slotMouseEmulation() );
+ 	DEF( I18N_NOOP("Mouse Emulation"),                     ALT+TQt::Key_F12, 0, slotMouseEmulation() );

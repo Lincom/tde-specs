@@ -1,7 +1,7 @@
-Index: kdm/backend/client.c
+Index: tdm/backend/client.c
 ===================================================================
---- kdm/backend/client.c.orig
-+++ kdm/backend/client.c
+--- tdm/backend/client.c.orig
++++ tdm/backend/client.c
 @@ -83,6 +83,10 @@ extern int loginsuccess( const char *Use
  #endif
  #include <signal.h>
@@ -39,10 +39,10 @@ Index: kdm/backend/client.c
  	userEnviron = inheritEnv( env, envvars );
  	env = systemEnv( p->pw_name );
  	systemEnviron = setEnv( env, "HOME", p->pw_dir );
-Index: kdm/backend/consolekit.c
+Index: tdm/backend/consolekit.c
 ===================================================================
 --- /dev/null
-+++ kdm/backend/consolekit.c
++++ tdm/backend/consolekit.c
 @@ -0,0 +1,552 @@
 +/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
 + *
@@ -596,10 +596,10 @@ Index: kdm/backend/consolekit.c
 +        dbus_connection_close (private_connection);
 +	private_connection = NULL;
 +}
-Index: kdm/backend/consolekit.h
+Index: tdm/backend/consolekit.h
 ===================================================================
 --- /dev/null
-+++ kdm/backend/consolekit.h
++++ tdm/backend/consolekit.h
 @@ -0,0 +1,36 @@
 +/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
 + *
@@ -637,10 +637,10 @@ Index: kdm/backend/consolekit.h
 +                                   const char    *x11_display);
 +
 +#endif /* __CONSOLE_KIT_H */
-Index: kdm/backend/dm.h
+Index: tdm/backend/dm.h
 ===================================================================
---- kdm/backend/dm.h.orig
-+++ kdm/backend/dm.h
+--- tdm/backend/dm.h.orig
++++ tdm/backend/dm.h
 @@ -37,6 +37,8 @@ from the copyright holder.
  #ifndef _DM_H_
  #define _DM_H_ 1
@@ -662,10 +662,10 @@ Index: kdm/backend/dm.h
  void SessionExit( int status ) ATTR_NORETURN;
  int ReadDmrc( void );
  extern char **userEnviron, **systemEnviron;
-Index: kdm/backend/Imakefile
+Index: tdm/backend/Imakefile
 ===================================================================
---- kdm/backend/Imakefile.orig
-+++ kdm/backend/Imakefile
+--- tdm/backend/Imakefile.orig
++++ tdm/backend/Imakefile
 @@ -155,13 +155,13 @@ PROCTITLE_DEFINES = -DHAS_SETPROCTITLE
  		 netaddr.c reset.c resource.c protodpy.c policy.c \
  		 session.c socket.c streams.c util.c xdmcp.c \
@@ -682,19 +682,19 @@ Index: kdm/backend/Imakefile
  		 $(XDMAUTHOBJS) $(RPCOBJS) $(KRB5OBJS)
  
           SRCS1 = $(COMMSRCS) client.c
-Index: kdm/backend/Makefile.am
+Index: tdm/backend/Makefile.am
 ===================================================================
---- kdm/backend/Makefile.am.orig
-+++ kdm/backend/Makefile.am
+--- tdm/backend/Makefile.am.orig
++++ tdm/backend/Makefile.am
 @@ -1,6 +1,6 @@
  # forcibly remove thread-related defines & flags
  AUTOMAKE_OPTIONS = foreign
 -AM_CPPFLAGS = $(USER_INCLUDES) $(X_INCLUDES) $(KRB4_INCS) $(KRB5_INCS) -I.. -I../..
 +AM_CPPFLAGS = -DWITH_CONSOLE_KIT=1 $(USER_INCLUDES) $(X_INCLUDES) $(KRB4_INCS) $(KRB5_INCS) $(DBUS_INCS) -I.. -I../..
  
- bin_PROGRAMS = kdm
- kdm_SOURCES = \
-@@ -9,6 +9,7 @@ kdm_SOURCES = \
+ bin_PROGRAMS = tdm
+ tdm_SOURCES = \
+@@ -9,6 +9,7 @@ tdm_SOURCES = \
      bootman.c \
      choose.c \
      client.c \
@@ -702,19 +702,19 @@ Index: kdm/backend/Makefile.am
      ctrl.c \
      daemon.c \
      dm.c \
-@@ -37,7 +38,7 @@ kdm_SOURCES = \
- kdm_LDFLAGS = $(USER_LDFLAGS) $(X_LDFLAGS) $(X_RPATH) $(KRB4_RPATH) $(KRB5_RPATH)
- kdm_LDADD = $(LIB_X11) -lXau $(LIBXDMCP) $(PASSWDLIBS) \
+@@ -37,7 +38,7 @@ tdm_SOURCES = \
+ tdm_LDFLAGS = $(USER_LDFLAGS) $(X_LDFLAGS) $(X_RPATH) $(KRB4_RPATH) $(KRB5_RPATH)
+ tdm_LDADD = $(LIB_X11) -lXau $(LIBXDMCP) $(PASSWDLIBS) \
      $(LIB_LIBS) $(KRB4_LIBS) $(KRB5_LIBS) $(LIBSOCKET) $(LIBRESOLV) \
 -    $(LIBUCB) $(LIBUTIL) $(LIBPOSIX4)
 +    $(DBUS_LIBS) $(LIBUCB) $(LIBUTIL) $(LIBPOSIX4)
  
  EXTRA_DIST = printf.c
  
-Index: kdm/backend/session.c
+Index: tdm/backend/session.c
 ===================================================================
---- kdm/backend/session.c.orig
-+++ kdm/backend/session.c
+--- tdm/backend/session.c.orig
++++ tdm/backend/session.c
 @@ -45,6 +45,10 @@ from the copyright holder.
  #include <ctype.h>
  #include <signal.h>
@@ -764,12 +764,12 @@ Index: kdm/backend/session.c
  	/*
  	 * Sometimes the Xsession somehow manages to exit before
  	 * a server crash is noticed - so we sleep a bit and wait
-Index: kdm/configure.in.in
+Index: tdm/configure.in.in
 ===================================================================
---- kdm/configure.in.in.orig
-+++ kdm/configure.in.in
-@@ -240,4 +240,51 @@ if test "x$with_kdm_xconsole" = xyes; th
-     AC_DEFINE(WITH_KDM_XCONSOLE, 1, [Build kdm with built-in xconsole])
+--- tdm/configure.in.in.orig
++++ tdm/configure.in.in
+@@ -240,4 +240,51 @@ if test "x$with_tdm_xconsole" = xyes; th
+     AC_DEFINE(WITH_KDM_XCONSOLE, 1, [Build tdm with built-in xconsole])
  fi
  
 +########### Check for DBus
@@ -819,4 +819,4 @@ Index: kdm/configure.in.in
 +  AC_SUBST(DBUS_INCS)
 +  AC_SUBST(DBUS_LIBS)
 +
- dnl AC_OUTPUT(kdm/kfrontend/sessions/kde.desktop)
+ dnl AC_OUTPUT(tdm/kfrontend/sessions/kde.desktop)
