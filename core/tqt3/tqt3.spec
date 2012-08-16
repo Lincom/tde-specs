@@ -34,7 +34,7 @@ Obsoletes:      qt3-64bit
 %endif
 #
 Summary:        A library for developing applications with graphical user interfaces
-Version:        3.4.0
+Version:        3.5.0
 Release:        1
 Provides:       qt_library_%version
 Recommends:     kdelibs3-default-style
