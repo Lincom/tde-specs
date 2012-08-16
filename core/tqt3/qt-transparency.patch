@@ -8,7 +8,7 @@ Index: src/kernel/qapplication.cpp
  void tqt_init( Display* dpy, TQt::HANDLE, TQt::HANDLE );
 +void tqt_init( int *, char **, Display* dpy, TQt::HANDLE, TQt::HANDLE );
  #endif
- Q_EXPORT bool tqt_tryModalHelper( TQWidget *widget, TQWidget **rettop );
+ TQ_EXPORT bool tqt_tryModalHelper( TQWidget *widget, TQWidget **rettop );
  
 @@ -909,6 +910,7 @@ TQApplication::TQApplication(Display *dp
  	tqt_init( &argc, argv, GuiClient );

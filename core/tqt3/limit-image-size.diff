@@ -38,7 +38,7 @@ Index: src/kernel/qimage.cpp
 --- src/kernel/qimage.cpp.orig
 +++ src/kernel/qimage.cpp
 @@ -68,6 +68,8 @@
- #define QT_NO_IMAGE_16_BIT
+ #define TQT_NO_IMAGE_16_BIT
  #endif
  
 +int qt_max_image_height = 0;

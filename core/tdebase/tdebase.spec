@@ -68,136 +68,7 @@ Source9921:     kcheckpass-pam-legacy
 Source22:       bnc.desktop
 Source23:       sourceforge.desktop
 Source24:       devmon-automounter.sh
-Patch0:         3_5_BRANCH.diff
-Patch3:         startkde.diff
-Patch6:         ksysguardd-openslp.diff
-Patch12:        dont-always-start-kaccess.diff
-Patch14:        autorun.patch
-Patch15:        artwork.diff
-# TODO
-Patch16:        kfontinst.diff
-Patch20:        ksplashml.patch
-Patch21:        media_suse.diff
-Patch22:        libkonq-kdemm.diff
-Patch39:        kdesktop_icons.diff
-Patch40:        suse_default_move.diff
-Patch44:        clock-suse-integrate.diff
-Patch46:        lock-xvkbd.diff
-Patch51:        kcontrol.diff
-Patch60:        short-menus.diff
-# from http://fred.hexbox.de/kde_patches/kmenu-search-fs20050503.diff 
-Patch61:        kmenu-search-fs20050503-fixed.diff
-Patch62:        fix-kcontrol-yast.diff
-Patch64:        default_fonts.diff
-#kdm
-Patch69:        kdm-cope-with-new-grub.diff
-Patch70:        kdm-aliasing.diff
-Patch71:        kdm-mark_autologin.diff
-Patch72:        kdm-all-users-nopass.diff
-Patch74:        kdm-sysconfig-values.diff
-# svn diff $BASE/branches/KDE/3.5/kdebase/kdm@599257 $BASE/branches/work/coolos_kdm | sed -e "s,^+++ ,+++ kdm/,"
-Patch75:        kdm-make_it_cool.diff
-Patch76:        kdm-admin-mode.diff
-Patch77:        kdm-suspend-hal.diff
-Patch78:        kdm-relaxed-auth.diff
-Patch79:        kdm-wordbreak.diff
-Patch80:        non-fast-malloc.diff
-Patch81:        ksmserver-defaulttohalt.diff
-Patch82:        fix-lockup-from-gnome-apps.diff
-Patch83:        ksmserver-suspend.diff
-Patch84:        default-kdeprintfax.diff
-Patch88:        hide-only-showin-entries.diff
-Patch92:        kcminit-ignore-arts.diff
-# SuSE specific weird shutdown, won't patch for now
-#Patch94:        mach_blass.diff
-Patch96:        khelpcenter-gnome-support.patch
-Patch996:       khelpcenter-gnome-support-legacy.patch
-Patch99:        xcursor.diff
-Patch100:       ksysguard-slp-ratelimit.diff
-Patch104:       locale-dont-show-flag.diff
-Patch105:       kscreensaver-random-NG.diff
-Patch111:       fix_default_theme_reset.diff
-Patch114:       improve-panelservicemenu-geticonset.diff
-Patch116:       teach-minicli-lock.diff
-Patch117:       access.diff
-Patch120:       kmenu-search-slowdown-fix.diff
-Patch123:       less_verbal_kdesu.patch
-Patch125:       kicker-defaults.diff
-Patch126:       kdebase_khc_rellinks.diff
-Patch127:       khelpcenter-use-suseconfig-indexer.diff
-Patch131:       background_default.diff
-Patch141:       khelpcenter-use-susehelp.diff
-Patch144:       make-wallpapers-hideable.diff
-Patch145:       kdebase_networkstatus_branch.diff
-Patch149:       kdeeject.diff
-Patch155:       use-full-hinting-by-default.diff
-Patch156:       kcmshell_use_kde-sound.diff
-Patch157:       kcmsamba_log.diff
-Patch160:       khelpcenter-localindices.patch
-Patch161:       applet-lock-logout.diff
-# svn diff $BASE/branches/KDE/3.5/kdebase/kicker@849788 $BASE/branches/work/suse_kickoff_qstyle/kicker | clean_patch
-Patch162:       kickoff.diff
-Patch1629:      kickoff-beagle.diff
-# svn diff $BASE/branches/KDE/3.5/kdebase/kcontrol/kicker@755866 $BASE/branches/work/suse_kickoff_qstyle/kcontrol/kicker
-Patch158:       kickoff-kcm.diff
-# svn diff -r 551296:HEAD khelpcenter
-Patch159:       khelpcenter-beagle.diff
-Patch163:       xinerama.patch
-Patch165:       optional-compmgr.diff
-Patch166:       lowdiskspace.patch
-Patch167:       ksmserver-timed.diff
-Patch169:       systray_order.diff
-Patch170:       khotkeys-multimedia-action.diff
-Patch171:       khotkeys-multimedia-action2.diff
-Patch172:       select-wm-gui.diff
-Patch173:       suspend-unmount.diff
-Patch174:       ksmserver-kdeinit.diff
-Patch177:       kio-media-errorhandling.diff
-Patch179:       restore-description-parens.diff
-Patch180:       kompmgr_use_defaults.diff
-Patch189:       runupdater.patch
-Patch190:       kcontrol-energy.diff
-Patch195:       ioslaveinfo-icon.diff
-Patch197:       rotate-wacom-pointers.diff
-Patch198:       konsole-schema-update.diff
-Patch199:       media-cryptosupport.diff
-Patch200:       kdm-use-rpmoptflags.diff
-Patch203:       show-konqueror-in-menu.diff
-Patch204:       fix-desktop-icons.diff
-Patch205:       kcmkdm-default-grub.diff
-Patch206:       simplify-randr-settings.diff
-Patch207:       spellcheck-default-utf8.diff
-Patch208:       kdm-audit-log.diff
-Patch209:       kwinbindings.diff
-Patch211:       konq-combo-editor.diff
-Patch212:       minicli-combo-editor.diff
-Patch214:       kdm-color-scheme.diff
-Patch215:       kdm-consolekit.diff
-Patch216:       krandr-0.5.2.1.diff.bz2
-Patch217:       kickoff-install-software.diff
-Patch218:       kdm-align-userlist-labels.diff
-Patch219:       kxkb-include-latin-layout.diff
-Patch220:       mediamanager-mount-point-utf8.diff
-Patch222:       khelpcenter-delayed-indexcheck.cpp
-Patch225:       system-folder_man.diff
-Patch227:       arts-start-on-demand.diff
-Patch228:       media-teardown_crypto.diff
-Patch229:       beagle-0.3.diff
-Patch230:       remove-beagle-stuff.diff
-Patch231:       kde3-session.diff
-Patch232:       kde3-session-restore.diff
-Patch233:       uninit.diff
-Patch234:       kpamgreeter.diff
-Patch235:       use-pam-before-classic.diff
-Patch236:       kdesu-remember-keep-password.diff
-Patch237:       suspend-kpowersave.diff
-Patch238:       knetattach-show.diff
-Patch239:       gcc44.diff
-Patch240:       bnc584223.diff
-Patch241:       openssl1.patch
-Patch242:       nsplugin-init-gtk.diff
-Patch243:       taskbar.patch
-Patch244:       mtab-reenable.patch
+
 
 %description
 This package contains tdebase, one of the basic packages of the Trinity Desktop Environment. It contains, among others, kwin (the window
@@ -302,11 +173,12 @@ Authors:
     Timothy Pearson <kb9vqf@pearsoncomputing.net>
     The KDE Team <kde@kde.org>
 
-%package kdm
+%package tdm
 License:        GPLv2+
-# usesubdirs kdm
+# usesubdirs tdm
 Summary:        The Trinity login and display manager
-Provides:       tdebase:%{_tde_bindir}/kdm
+Provides:       tdebase:%{_tde_bindir}/tdm
+Provides:	tdebase-kdm == %version
 Requires:       xorg-x11
 Requires:       %{name}-runtime >= %version
 Group:          System/GUI/TDE
@@ -440,134 +312,7 @@ Authors:
 
 %prep
 %setup -q -b 8 -b 13
-%patch0
-%patch3
-# causes hangs (bnc#158239)
-#%patch6
-#%patch100
-%patch12
-%patch14
-# do we really still need it ?
-#%patch16
-%patch15
-%patch20
-%patch21
-%patch39
-%patch40
-%patch44
-%patch46
-%patch51
-%patch60
-%patch64
-#%patch94
-# all the kdm changes
-%patch75
-%patch70
-%patch71
-%patch72
-%patch74
-%patch76
-%patch78
-%patch79
-# default-to-halt
-%patch81
-%patch82
-%patch83
-%patch77
-%patch200
-%patch215
-%patch84
-%patch61
-%patch120
-%patch22
-%patch92
-%patch88
-%patch96
-# xcursor
-%patch99
-%patch62
-%patch69
-%patch104
-%patch105
-%patch111
-%patch114
-%patch116
-%patch117
-%patch123
-%patch126
-%patch131
-%patch141 -p1
-%patch127
-%patch144
-%patch145
-%patch149
-%patch155
-%patch156
-%patch157
-%patch160
-%patch161
-pushd kicker
-%patch162
-pushd ../kcontrol/kicker
-%patch158
-popd
-popd
-%patch165
-%patch166
-%patch167
 tar xvfj %SOURCE20
-%patch163
-%patch125
-%patch169
-%patch170
-%patch171
-%patch172
-%patch173
-%patch174
-%patch177
-%patch179
-%patch180
-%patch189
-%patch190
-%patch195
-%patch198
-%patch199
-%patch203
-%patch204
-%patch205
-%patch207
-%patch208
-%patch209
-%patch211
-%patch212
-%patch214
-pushd kcontrol
-%patch216
-popd
-%patch217
-%patch218
-%patch219
-%patch220
-%patch222
-%patch225
-%patch197
-%patch206
-%patch227
-%patch228
-%patch231
-%patch232
-%patch233
-%patch234
-%patch235
-%patch236
-%patch237
-%patch238
-%patch239
-%patch240 -p1
-%patch241 -p0
-%patch242 -p0
-%patch243
-%patch244 -p1
 
 rm -rf kappfinder
 rm pics/crystalsvg/cr??-*emacs.png
@@ -577,7 +322,7 @@ aclocal
 autoconf
 automake -a -c 
 cd ../%{name}-%{version}
-update_admin
+#update_admin
 
 %build
 
@@ -633,9 +378,9 @@ mkdir -p $RPM_BUILD_ROOT/var/adm/fillup-templates
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 install -m 0644 %SOURCE9 ${RPM_BUILD_ROOT}/%{_tde_datadir}/kdewizard/pics/wizard_small.png
 install -m 0744 %SOURCE6 $RPM_BUILD_ROOT/etc/init.d/ksysguardd
-mkdir -p $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/faces/
-ln -s ../pics/users/root1.png $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/faces/root.face.icon
-ln -s ../pics/users/default2.png $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/faces/.default.face.icon
+mkdir -p $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/faces/
+ln -s ../pics/users/root1.png $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/faces/root.face.icon
+ln -s ../pics/users/default2.png $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/faces/.default.face.icon
 ln -sf /etc/init.d/ksysguardd  $RPM_BUILD_ROOT/%{_sbindir}/rcksysguardd
 install -D -m 644 %SOURCE15 $RPM_BUILD_ROOT/etc/slp.reg.d/ksysguardd.reg
 # even if we use smbro
@@ -644,10 +389,10 @@ install -D -m 644 kioslave/smb/smb-network.desktop $RPM_BUILD_ROOT/{%{_tde_datad
 # install kde session file
 #
 install -m 0755 -d $RPM_BUILD_ROOT/usr/share/xsessions/
-mv $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/sessions/tde.desktop $RPM_BUILD_ROOT/usr/share/xsessions/
+mv $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/sessions/tde.desktop $RPM_BUILD_ROOT/usr/share/xsessions/
 # for those we have a package for remove the backup and rely on the package
 for wm in gnome xfce4 xfce wmaker blackbox fvwm95 fvwm icewm enlightenment; do
-  rm -f $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/sessions/$wm.desktop
+  rm -f $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/sessions/$wm.desktop
 done
 %suse_update_desktop_file $RPM_BUILD_ROOT/usr/share/xsessions/tde.desktop
 #
@@ -760,8 +505,8 @@ for i in $RPM_BUILD_ROOT/%{_tde_applicationsdir}/kde/*.desktop \
   grep -q X-SuSE-translate "$i" && continue
   %suse_update_desktop_file "$i"
 done
-rm -f $RPM_BUILD_ROOT/%{_tde_configdir}/kdm/README
-rm -f $RPM_BUILD_ROOT/%{_tde_datadir}/kdm/sessions/icewm.desktop
+rm -f $RPM_BUILD_ROOT/%{_tde_configdir}/tdm/README
+rm -f $RPM_BUILD_ROOT/%{_tde_datadir}/tdm/sessions/icewm.desktop
 #
 # gimp 2.0 does have a different named icon
 #
@@ -799,20 +544,20 @@ if test -e opt/tde/share/apps/ksplash/pics -a ! -L opt/tde/share/apps/ksplash/pi
      mv opt/tde/share/apps/ksplash/pics opt/tde/share/apps/ksplash/pics-default
   fi
 fi
-kdmrc=/opt/tde/share/config/kdm/kdmrc
+tdmrc=/opt/tde/share/config/tdm/tdmrc
 # if the /opt/tde one is obviously wrong and we have one in /etc we move that one over to 
-# avoid confusion on update what's the right kdmrc
-if test -f $kdmrc && grep -q "Session=/opt/tde/share/config/kdm/Xsession" $kdmrc && test -f /etc$kdmrc; then
-   mv /etc$kdmrc $kdmrc
+# avoid confusion on update what's the right tdmrc
+if test -f $tdmrc && grep -q "Session=/opt/tde/share/config/tdm/Xsession" $tdmrc && test -f /etc$tdmrc; then
+   mv /etc$tdmrc $tdmrc
 fi
 
 %post
 /sbin/ldconfig
 %run_permissions
 
-%post kdm
+%post tdm
 %{fillup_only -an windowmanager-tdebase}
-/opt/tde/bin/genkdmconf
+/opt/tde/bin/gentdmconf
 if test -f /etc/sysconfig/displaymanager ; then
   . /etc/sysconfig/displaymanager
 fi
@@ -832,7 +577,7 @@ fi
 %post -n fileshareset
 %run_permissions
 
-%postun kdm
+%postun tdm
 %insserv_cleanup
 
 %postun
@@ -1277,25 +1022,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_tde_datadir}/konqueror/dirtree/remote/smb-network.desktop
 %{_tde_mimedir}/application/x-smb-workgroup.desktop
 
-%files kdm
+%files tdm
 %defattr(-,root,root)
-%dir %{_tde_docdir}/kdm
-%{_tde_bindir}/genkdmconf
-%{_tde_bindir}/kdm*
+%dir %{_tde_docdir}/tdm
+%{_tde_bindir}/gentdmconf
+%{_tde_bindir}/tdm*
 %{_tde_bindir}/krootimage
-%{_tde_datadir}/kdm
+%{_tde_datadir}/tdm
 %{_tde_modulesdir}/kgreet_pam.*
-%doc %{_tde_docdir}/kdm/README
-%dir %{_tde_configdir}/kdm
-%config(noreplace) %{_tde_configdir}/kdm/kdmrc
-%config(noreplace) %{_tde_configdir}/kdm/backgroundrc
+%doc %{_tde_docdir}/tdm/README
+%dir %{_tde_configdir}/tdm
+%config(noreplace) %{_tde_configdir}/tdm/tdmrc
+%config(noreplace) %{_tde_configdir}/tdm/backgroundrc
 %ghost /var/run/xdmctl
-# kdm has not been renamed.
-%{_sbindir}/rckdm
-%{_tde_applicationsdir}/kde/kdm.desktop
-%{_tde_iconsdir}/*/*/*/kdmconfig.*
-%{_tde_modulesdir}/kcm_kdm.*
-%doc %lang(en) %{_tde_htmldir}/en/kdm
+# tdm has been renamed
+%{_sbindir}/rctdm
+%{_tde_applicationsdir}/tde/tdm.desktop
+%{_tde_iconsdir}/*/*/*/tdmconfig.*
+%{_tde_modulesdir}/kcm_tdm.*
+%doc %lang(en) %{_tde_htmldir}/en/tdm
 
 %files session
 %defattr(-,root,root)

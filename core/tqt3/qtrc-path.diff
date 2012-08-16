@@ -11,7 +11,7 @@ Index: src/tools/qsettings.cpp
  // POSIX Large File Support redefines open -> open64
  static inline int qt_open( const char *pathname, int flags, mode_t mode )
 @@ -468,8 +469,18 @@ TQSettingsPrivate::TQSettingsPrivate( TQ
-     Q_UNUSED( format );
+     TQ_UNUSED( format );
  #endif
  
 -    TQString appSettings(TQDir::homeDirPath() + "/.qt/");
@@ -28,8 +28,8 @@ Index: src/tools/qsettings.cpp
 +    TQString appSettings(home);
 +
 +    TQString defPath("/etc/X11/");
- #ifdef Q_WS_WIN
- #ifdef Q_OS_TEMP
+ #ifdef TQ_WS_WIN
+ #ifdef TQ_OS_TEMP
  	TCHAR path[MAX_PATH];
 @@ -517,6 +528,15 @@ TQSettingsPrivate::TQSettingsPrivate( TQ
  

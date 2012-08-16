@@ -45,6 +45,7 @@ Summary:        Development files for libdbus-1-tqt
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
 Requires:       dbus-1-devel libtqt4-devel
+Provides:	dbus-1-tqt-devel
 
 %description devel
 This library provides TQt-classes for accessing the DBus.
