@@ -42,7 +42,7 @@
  
 %_tde_platform_version R13.99
  
-%tde_runtime_requires Requires: tdebase3-runtime >= %_tde_platform_version qt3 >= 3.4.0
+%tde_runtime_requires Requires: tdebase3-runtime >= %_tde_platform_version qt3 >= 3.5.0
  
 %_tde_build_type release
 
