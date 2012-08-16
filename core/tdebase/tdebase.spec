@@ -1,5 +1,5 @@
 #
-# spec file for package tdebase (version 3.5.13)
+# spec file for package tdebase (version R13.99)
 #
 # copyright (c) 2011 the Trinity Project
 #
