@@ -80,6 +80,7 @@ Patch135:       parseFontName.diff
 #Patch136:       qt3-no-date.diff
 Patch139:       gcc46.diff
 #Patch140:       revert-iodbc-to-uodbc.diff
+Patch141:	qcommonstyle-headerfix.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
@@ -130,6 +131,7 @@ ln -sf $PWD/src/kernel/qximinputcontext_p.h       include/private/
 #%patch136
 %patch139
 #%patch140
+%patch141
 cd translations
 tar xvjf %SOURCE12
 cd ..
