@@ -1,7 +1,7 @@
-Index: qt3-3.5.0/src/styles/qcommonstyle.cpp
+..Index: qt3-3.5.0/src/styles/qcommonstyle.cpp
 ===================================================================
---- qt3-3.5.0.orig/src/styles/qcommonstyle.cpp
-+++ qt3-3.5.0/src/styles/qcommonstyle.cpp
+--- src/styles/qcommonstyle.cpp
++++ src/styles/qcommonstyle.cpp
 @@ -137,7 +137,7 @@ static const char * const check_list_con
  "                ",
  "                "};
