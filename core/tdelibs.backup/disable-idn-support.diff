@@ -10,7 +10,7 @@ Index: tdecore/network/kresolver.cpp
  # include <idna.h>
  #endif
  
-@@ -1084,6 +1085,10 @@ static TQStringList splitLabels(const QSt
+@@ -1084,6 +1085,10 @@ static QStringList splitLabels(const QSt
  static TQCString ToASCII(const TQString& label)
  {
  #ifdef HAVE_IDNA_H
@@ -21,7 +21,7 @@ Index: tdecore/network/kresolver.cpp
    // We have idna.h, so we can use the idna_to_ascii
    // function :)
  
-@@ -1118,6 +1123,10 @@ static TQCString ToASCII(const TQString& l
+@@ -1118,6 +1123,10 @@ static QCString ToASCII(const QString& l
  static TQString ToUnicode(const TQString& label)
  {
  #ifdef HAVE_IDNA_H

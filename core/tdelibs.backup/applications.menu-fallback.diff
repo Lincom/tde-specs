@@ -10,7 +10,7 @@ Index: kded/kbuildsycoca.cpp
 -     VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 +
 +     VFolderMenu::SubMenu *kdeMenu;
-+     if ( TQFile::exists( "/etc/xdg/menus/applications.menu" ) )
++     if ( QFile::exists( "/etc/xdg/menus/applications.menu" ) )
 +        kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 +     else
 +        kdeMenu = g_vfolder->parseMenu("applications.menu.kde", true);

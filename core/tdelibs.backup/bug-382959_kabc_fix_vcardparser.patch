@@ -188,7 +188,7 @@ Index: kabc/vcardparser/vcardparser.cpp
 +typedef TQValueList<TQCString> TQCStringList;
  
 -static void addEscapes( TQString &str )
-+TQValueList<TQCString> splitCString( const TQCString &str, char sep )
++QValueList<TQCString> splitCString( const TQCString &str, char sep )
  {
 -  str.replace( '\\', backslash );
 -  str.replace( ',', comma );
@@ -503,7 +503,7 @@ Index: kabc/vcardtool.cpp
      TQStringList::ConstIterator strIt;
  
      // ADR + LABEL
-@@ -351,17 +364,30 @@ TQString VCardTool::createVCards( Address
+@@ -351,17 +364,30 @@ QString VCardTool::createVCards( Address
      vCardList.append( card );
    }
  

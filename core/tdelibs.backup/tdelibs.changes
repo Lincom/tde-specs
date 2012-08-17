@@ -1,9 +1,4 @@
 -------------------------------------------------------------------
-Fri Aug 17 00:32:23 UTC 2012 - robxu9@gmail.com
-
-- Run tdelibs through attempted Java magic
-
--------------------------------------------------------------------
 Thu Aug 16 04:20:23 UTC 2012 - robxu9@gmail.com
 
 - Update for commit 902cfa1 to fix FTBFS
