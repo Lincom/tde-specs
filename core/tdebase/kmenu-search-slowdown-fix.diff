@@ -1,0 +1,132 @@
+Index: kicker/kicker/ui/k_mnu.cpp
+===================================================================
+--- kicker/kicker/ui/k_mnu.cpp.orig
++++ kicker/kicker/ui/k_mnu.cpp
+@@ -874,6 +874,7 @@ void PanelKMenu::updateRecent()
+             insertSeparator(RecentlyLaunchedApps::the().m_nNumMenuItems);
+         }
+     }
++    iconsLoaded_ = false;
+ }
+ 
+ void PanelKMenu::clearRecentMenuItems()
+Index: kicker/kicker/ui/service_mnu.cpp
+===================================================================
+--- kicker/kicker/ui/service_mnu.cpp.orig
++++ kicker/kicker/ui/service_mnu.cpp
+@@ -63,13 +63,20 @@ PanelServiceMenu::PanelServiceMenu(const
+       insertInlineHeader_( insertInlineHeader ),
+       clearOnClose_(false),
+       addmenumode_(addmenumode),
+-      popupMenu_(0)
++      popupMenu_(0),
++      iconsLoaded_(false)
+ {
+     excludeNoDisplay_=true;
+ 
+     connect(KSycoca::self(), TQT_SIGNAL(databaseChanged()),
+             TQT_SLOT(slotClearOnClose()));
+     connect(this, TQT_SIGNAL(aboutToHide()), this, TQT_SLOT(slotClose()));
++    
++    const int iconSize = KickerSettings::menuEntryHeight();
++    TQPixmap pix(iconSize,iconSize);
++    TQBitmap map(iconSize,iconSize,true);
++    pix.setMask(map);
++    emptyiconset = TQIconSet(pix,pix);
+ }
+ 
+ PanelServiceMenu::~PanelServiceMenu()
+@@ -103,6 +110,7 @@ void PanelServiceMenu::initialize()
+     clearSubmenus();
+     searchSubMenuIDs.clear();
+     searchMenuItems.clear();
++    iconsLoaded_ = false;
+     doInitialize();
+ }
+ 
+@@ -290,15 +298,13 @@ void PanelServiceMenu::fillMenu(KService
+                 newSubMenu(g->name(), g->relPath(), this, g->name().utf8(), inlineHeaderName);
+             m->setCaption(groupCaption);
+ 
+-            TQIconSet iconset = KickerLib::menuIconSet(g->icon());
+-
+             if (separatorNeeded)
+             {
+                 insertSeparator();
+                 separatorNeeded = false;
+             }
+ 
+-            int newId = insertItem(iconset, groupCaption, m, id++);
++            int newId = insertItem(emptyiconset,groupCaption, m, id++);
+             entryMap_.insert(newId, static_cast<KSycocaEntry*>(g));
+             // This submenu will be searched when applying a search string
+             searchSubMenuIDs[m] = newId;
+@@ -394,6 +400,12 @@ void PanelServiceMenu::doInitialize()
+ 
+ void PanelServiceMenu::configChanged()
+ {
++    const int iconSize = KickerSettings::menuEntryHeight();
++    TQPixmap pix(iconSize,iconSize);
++    TQBitmap map(iconSize,iconSize,true);
++    pix.setMask(map);
++    emptyiconset = TQIconSet(pix,pix);
++
+     deinitialize();
+ }
+ 
+@@ -458,9 +470,9 @@ void PanelServiceMenu::insertMenuItem(KS
+ 
+     int newId;
+     if ( label.isEmpty() )
+-       newId = insertItem(KickerLib::menuIconSet(s->icon()), serviceName, nId, nIndex);
++       newId = insertItem(emptyiconset, serviceName, nId, nIndex);       
+     else
+-       newId = insertItem(KickerLib::menuIconSet(s->icon()), label, nId, nIndex);
++       newId = insertItem(emptyiconset, label, nId, nIndex);
+     entryMap_.insert(newId, static_cast<KSycocaEntry*>(s));
+ }
+ 
+@@ -989,6 +1001,26 @@ bool PanelServiceMenu::hasSearchResults(
+     return hasSearchResults_;
+ }
+ 
++void PanelServiceMenu::slotAboutToShow()
++{
++   KPanelMenu::slotAboutToShow();
++
++   if (!iconsLoaded_) {
++     EntryMap::Iterator mapIt;
++     for ( mapIt = entryMap_.begin(); mapIt != entryMap_.end(); ++mapIt ) {
++        KService *s = dynamic_cast<KService *>(static_cast<KSycocaEntry*>(mapIt.data()));
++        if (s)
++          changeItem(mapIt.key(),KickerLib::menuIconSet(s->icon()),text(mapIt.key()));
++        else {
++          KServiceGroup *g = dynamic_cast<KServiceGroup *>(static_cast<KSycocaEntry*>(mapIt.data()));
++          if (g)
++            changeItem(mapIt.key(),KickerLib::menuIconSet(g->icon()),text(mapIt.key()));
++        }
++     }
++     iconsLoaded_ = true;
++ }
++}
++
+ // updates "recent" section of KMenu
+ void PanelServiceMenu::updateRecentlyUsedApps(KService::Ptr &service)
+ {
+Index: kicker/kicker/ui/service_mnu.h
+===================================================================
+--- kicker/kicker/ui/service_mnu.h.orig
++++ kicker/kicker/ui/service_mnu.h
+@@ -124,9 +124,12 @@ protected:
+     PanelServiceMenuMap searchSubMenuIDs;
+     bool hasSearchResults_;
+     std::set<int> searchMenuItems;
++    TQIconSet emptyiconset;
++    bool iconsLoaded_;
+ 
+ private slots:
+     void slotContextMenu(int);
++    void slotAboutToShow();
+ 
+ private:
+     enum ContextMenuEntry { AddItemToPanel, EditItem, AddMenuToPanel, EditMenu,

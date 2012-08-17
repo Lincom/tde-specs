@@ -1,0 +1,13 @@
+Index: kdesktop/Makefile.am
+===================================================================
+--- kdesktop/Makefile.am.orig
++++ kdesktop/Makefile.am
+@@ -6,6 +6,8 @@ kdesktop_la_LIBADD   = libkdesktopsettin
+ 
+ SUBDIRS = . lock pics patterns programs init kwebdesktop
+ 
++KDE_OPTIONS = nofinal
++
+ ####### Files
+ 
+ bin_PROGRAMS = kcheckrunning kxdglauncher

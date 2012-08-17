@@ -1,0 +1,13 @@
+Index: tdebase-R13.99/khelpcenter/khelpcenter.desktop
+===================================================================
+--- tdebase-R13.99.orig/khelpcenter/khelpcenter.desktop
++++ tdebase-R13.99/khelpcenter/khelpcenter.desktop
+@@ -127,7 +127,7 @@ Icon=khelpcenter
+ DocPath=khelpcenter/index.html
+ Type=Service
+ Terminal=false
+-Exec=khelpcenter %u
++Exec=susehelp %u
+ SwallowExec=
+ SwallowTitle=
+ X-TDE-StartupNotify=true

@@ -1,0 +1,73 @@
+Index: ksmserver/server.h
+===================================================================
+--- ksmserver/server.h.orig
++++ ksmserver/server.h
+@@ -146,7 +146,8 @@ private:
+ 
+     KProcess* startApplication( TQStringList command,
+         const TQString& clientMachine = TQString::null,
+-        const TQString& userId = TQString::null );
++        const TQString& userId = TQString::null,
++        bool wm = false );
+     void executeCommand( const TQStringList& command );
+     
+     bool isWM( const KSMClient* client ) const;
+Index: ksmserver/startup.cpp
+===================================================================
+--- ksmserver/startup.cpp.orig
++++ ksmserver/startup.cpp
+@@ -198,7 +198,7 @@ void KSMServer::launchWM( const TQValueL
+     // when we have a window manager, we start it first and give
+     // it some time before launching other processes. Results in a
+     // visually more appealing startup.
+-    wmProcess = startApplication( wmStartCommands[ 0 ] );
++    wmProcess = startApplication( wmStartCommands[ 0 ], TQString(), TQString(), true );
+     connect( wmProcess, SIGNAL( processExited( KProcess* )), SLOT( wmProcessChange()));
+     // there can be possibly more wm's (because of forking for multihead),
+     // but in such case care only about the process of the first one
+Index: ksmserver/server.cpp
+===================================================================
+--- ksmserver/server.cpp.orig
++++ ksmserver/server.cpp
+@@ -101,7 +101,7 @@ KSMServer* KSMServer::self()
+  * to restart applications.
+  */
+ KProcess* KSMServer::startApplication( TQStringList command, const TQString& clientMachine,
+-    const TQString& userId )
++    const TQString& userId, bool wm )
+ {
+     if ( command.isEmpty() )
+         return NULL;
+@@ -118,12 +118,26 @@ KProcess* KSMServer::startApplication( T
+         command.prepend( clientMachine );
+ 	command.prepend( xonCommand ); // "xon" by default
+     }
+-    KProcess* process = new KProcess( this );
+-    *process << command;
+-    // make it auto-delete
+-    connect( process, SIGNAL( processExited( KProcess* )), process, SLOT( deleteLater()));
+-    process->start();
+-    return process;
++// TODO this function actually should not use KProcess at all and use klauncher (kdeinit) instead.
++// Klauncher should also have support for tracking whether the launched process is still alive
++// or not, so this should be redone. For now, use KProcess for wm's, as they need to be tracked,
++// klauncher for the rest where ksmserver doesn't care.
++    if( wm ) {
++        KProcess* process = new KProcess( this );
++        *process << command;
++        // make it auto-delete
++        connect( process, SIGNAL( processExited( KProcess* )), process, TQT_SLOT( deleteLater()));
++        process->start();
++        return process;
++    } else {
++        int n = command.count();
++        TQCString app = command[0].latin1();
++        TQValueList<TQCString> argList;
++        for ( int i=1; i < n; i++)
++           argList.append( TQCString(command[i].latin1()));
++        DCOPRef( launcher ).send( "exec_blind", app, DCOPArg( argList, "TQValueList<TQCString>" ) );
++        return NULL;
++    }
+ }
+ 
+ /*! Utility function to execute a command on the local machine. Used

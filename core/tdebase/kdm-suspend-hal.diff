@@ -1,0 +1,322 @@
+Index: tdm/backend/ctrl.c
+===================================================================
+--- tdm/backend/ctrl.c.orig
++++ tdm/backend/ctrl.c
+@@ -543,6 +543,10 @@ processCtrl( const char *string, int len
+ 							Reply( "nuke\t" );
+ 					}
+ 				}
++				if (d->allowSuspend != SHUT_NONE) {
++				    Reply( "suspend\t" );
++				}
++
+ 				if ((d->displayType & d_location) == dLocal &&
+ 				    AnyReserveDisplays())
+ 					Writer( fd, cbuf, sprintf( cbuf, "reserve %d\t",
+Index: tdm/backend/greet.h
+===================================================================
+--- tdm/backend/greet.h.orig
++++ tdm/backend/greet.h
+@@ -125,6 +125,7 @@ from the copyright holder.
+ # define SHUT_REBOOT      1	/* how */
+ # define SHUT_HALT        2
+ # define SHUT_CONSOLE     -1 /* pseudo-code */
++# define SHUT_SUSPEND     -2 /* pseudo-code */
+ # define SHUT_SCHEDULE    0	/* when; config only */
+ # define SHUT_TRYNOW      1
+ # define SHUT_FORCENOW    2
+Index: tdm/config.def
+===================================================================
+--- tdm/config.def.orig
++++ tdm/config.def
+@@ -1793,6 +1793,19 @@ Description:
+  Who is allowed to shut down the system. This applies both to the
+  greeter and to the command <acronym>FiFo</acronym>.
+ 
++Key: AllowSuspend
++Type: enum
++ None/SHUT_NONE: no <guilabel>Suspend...</guilabel> menu entry is shown at all
++ Root/SHUT_ROOT: the <systemitem class="username">root</systemitem> password must be entered to suspend
++ All/SHUT_ALL: everybody can suspend the machine
++Default: Root
++User: greeter
++User: core
++Instance: #:0/All
++Comment: &
++Description:
++  If the user should have an option to suspend the system if configured to (also in the desktop)
++
+ Key: AllowSdForceNow
+ Type: enum
+  None: no forced shutdown is allowed at all
+Index: tdm/kfrontend/tdmshutdown.cpp
+===================================================================
+--- tdm/kfrontend/tdmshutdown.cpp.orig
++++ tdm/kfrontend/tdmshutdown.cpp
+@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fi
+ 
+ */
+ 
++#include <liblazy.h>
+ #include "tdmshutdown.h"
+ #include "tdm_greet.h"
+ 
+@@ -36,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fi
+ #include <kuser.h>
+ #include <kconfig.h>
+ #include <kiconloader.h>
++#include <kdebug.h>
+ 
+ #include <tqcombobox.h>
+ #include <tqvbuttongroup.h>
+@@ -62,6 +64,10 @@ extern bool has_twin;
+ int TDMShutdownBase::curPlugin = -1;
+ PluginList TDMShutdownBase::pluginList;
+ 
++#define DBUS_HAL_INTERFACE		"org.freedesktop.Hal"
++#define DBUS_HAL_SYSTEM_POWER_INTERFACE	"org.freedesktop.Hal.Device.SystemPowerManagement"
++#define HAL_UDI_COMPUTER		"/org/freedesktop/Hal/devices/computer"
++
+ TDMShutdownBase::TDMShutdownBase( int _uid, TQWidget *_parent )
+ 	: inherited( _parent )
+ 	, box( new TQVBoxLayout( this, KDmh, KDsh ) )
+@@ -76,6 +82,7 @@ TDMShutdownBase::TDMShutdownBase( int _u
+ 	, verify( 0 )
+ 	, needRoot( -1 )
+ 	, uid( _uid )
++        , willSuspend( false )
+ {
+ }
+ 
+@@ -92,6 +99,7 @@ TDMShutdownBase::complete( TQWidget *pre
+ 
+ 	if (uid &&
+ 	    ((willShut && _allowShutdown == SHUT_ROOT) ||
++             ( willSuspend && _allowSuspend == SHUT_ROOT ) ||
+ 	     (mayNuke && _allowNuke == SHUT_ROOT)))
+ 	{
+ 		rootlab = new TQLabel( i18n("Root authorization required."), this );
+@@ -174,6 +182,7 @@ TDMShutdownBase::updateNeedRoot()
+ {
+ 	int nNeedRoot = uid &&
+ 		(((willShut && _allowShutdown == SHUT_ROOT) ||
++                  ( willSuspend && _allowSuspend == SHUT_ROOT ) ||
+ 		  (_allowNuke == SHUT_ROOT && doesNuke)));
+ 	if (verify && nNeedRoot != needRoot) {
+ 		if (needRoot == 1)
+@@ -263,6 +272,57 @@ TDMShutdown::TDMShutdown( int _uid, TQWi
+ 	connect( rb, TQT_SIGNAL(doubleClicked()), TQT_SLOT(accept()) );
+ 	connect( restart_rb, TQT_SIGNAL(doubleClicked()), TQT_SLOT(accept()) );
+ 
++        if ( _allowSuspend != SHUT_NONE )
++        {
++            int supported = -1;
++            liblazy_hal_get_property_bool(HAL_UDI_COMPUTER, "power_management.can_suspend", &supported);
++            if (supported == 1)
++                suspend_ram = true;
++            else
++                suspend_ram = false;
++
++            liblazy_hal_get_property_bool(HAL_UDI_COMPUTER, "power_management.can_standby", &supported);
++            if (supported == 1)
++                standby = true;
++            else
++                standby = false;
++            liblazy_hal_get_property_bool(HAL_UDI_COMPUTER, "power_management.can_hibernate", &supported);
++            if (supported == 1)
++                suspend_disk = true;
++            else
++                suspend_disk = false;
++
++/*	if (liblazy_polkit_is_user_allowed_by_uid(0, "hal-power-hibernate", NULL) != 1)
++  suspend_disk = false;
++  if (liblazy_polkit_is_user_allowed_by_uid(0, "hal-power-suspend", NULL) != 1)
++  suspend_ram = false;
++  if (liblazy_polkit_is_user_allowed_by_uid(0, "hal-power-standby", NULL) != 1)
++  standby = false;
++*/
++            int sum = standby + suspend_ram + suspend_disk;
++            if ( sum ) {
++                buttonlay->addSpacing( KDialog::spacingHint() );
++
++                TQButton *btnSuspend;
++                if (sum > 1) {
++                    btnSuspend = new KDMDelayedPushButton( KGuiItem( i18n("&Suspend Computer"), "player_pause"), this );
++                    TQPopupMenu *suspends = new TQPopupMenu(this);
++                    if (suspend_disk)
++                        suspends->insertItem(i18n("Suspend to Disk"), 1);
++                    if (suspend_ram)
++                        suspends->insertItem(i18n("Suspend to RAM"), 2);
++                    if (standby)
++                        suspends->insertItem(i18n("Standby"), 3);
++                    connect(suspends, SIGNAL(activated(int)), SLOT(slotSuspend(int)));
++                    static_cast<KDMDelayedPushButton*>(btnSuspend)->setPopup(suspends);
++                } else {
++                    btnSuspend = new KPushButton( KGuiItem( i18n("&Suspend Computer"), "player_pause"), this );
++                }
++                buttonlay->addWidget( btnSuspend );
++                connect(btnSuspend, SIGNAL(clicked()), SLOT(slotSuspend()));
++            }
++        }
++
+ 	GSet( 1 );
+ 	GSendInt( G_ListBootOpts );
+ 	if (GRecvInt() == BO_OK) { /* XXX show dialog on failure */
+@@ -336,6 +396,65 @@ get_date( const char *str )
+ 	return dstr.toInt();
+ }
+ 
++void KDMSlimShutdown::slotSuspend()
++{
++  if (suspend_disk)
++      slotSuspend( 1 );
++  else if (suspend_ram)
++      slotSuspend( 2 );
++  else if ( standby )
++      slotSuspend( 3 );
++  else
++      reject();
++}
++
++void KDMSlimShutdown::slotSuspend(int id)
++{
++  reject();
++  // dpySpec *sess = fetchSessions( lstRemote | lstTTY );
++  // it would be nice to show the sessions to suspend, but it
++  // would require string changes (coolo)
++  dpySpec *sess = 0;
++  kdDebug() << "slotSuspend " << _allowSuspend << endl;
++  if (sess || _allowSuspend == SHUT_ROOT)
++  {
++      int ret = KDMConfShutdown( -1, sess, SHUT_SUSPEND, 0 ).exec();
++      if ( !ret )
++          return;
++  }
++
++  int error = 0;
++  int wake = 0;
++  DBusMessage *reply;
++
++  if (suspend_disk && id == 1) {
++       error = liblazy_dbus_system_send_method_call(DBUS_HAL_INTERFACE,
++						    HAL_UDI_COMPUTER,
++						    DBUS_HAL_SYSTEM_POWER_INTERFACE,
++						    "Hibernate",
++						    &reply,
++						    DBUS_TYPE_INVALID);
++  } else if (suspend_ram && id == 2)
++       error = liblazy_dbus_system_send_method_call(DBUS_HAL_INTERFACE,
++						    HAL_UDI_COMPUTER,
++						    DBUS_HAL_SYSTEM_POWER_INTERFACE,
++						    "Suspend",
++						    &reply,
++						    DBUS_TYPE_INT32,
++						    &wake,
++						    DBUS_TYPE_INVALID);
++  else if (standby && id == 3)
++       error = liblazy_dbus_system_send_method_call(DBUS_HAL_INTERFACE,
++						    HAL_UDI_COMPUTER,
++						    DBUS_HAL_SYSTEM_POWER_INTERFACE,
++						    "Standby",
++						    &reply,
++						  DBUS_TYPE_INVALID);
++  else {
++      return;
++  }
++}
++
+ void
+ TDMShutdown::accept()
+ {
+@@ -812,16 +931,27 @@ TDMConfShutdown::TDMConfShutdown( int _u
+ 	if (type == SHUT_CONSOLE)
+ 		willShut = false;
+ #endif
++        TQString title;
++        if ( type == SHUT_HALT)
++            title = i18n("Turn Off Computer");
++        else {
++#ifdef HAVE_VTS
++            if ( type == SHUT_CONSOLE)
++                title = i18n("Switch to Console");
++            else
++#endif
++                if ( type == SHUT_SUSPEND ) {
++                    willSuspend = true;
++                    title = i18n( "Suspend Computer" );
++                }
++                else
++                    title = i18n("Restart Computer");
++        }
++
+ 	box->addWidget( new TQLabel( TQString( "<qt><center><b><nobr>"
+ 	                                     "%1%2"
+ 	                                     "</nobr></b></center><br></qt>" )
+-	                            .arg( (type == SHUT_HALT) ?
+-	                                  i18n("Turn Off Computer") :
+-#ifdef HAVE_VTS
+-	                                  (type == SHUT_CONSOLE) ?
+-	                                  i18n("Switch to Console") :
+-#endif
+-	                                  i18n("Restart Computer") )
++	                            .arg( title )
+ 	                            .arg( os ?
+ 	                                  i18n("<br>(Next boot: %1)")
+ 	                                  .arg( TQString::fromLocal8Bit( os ) ) :
+Index: tdm/kfrontend/tdmshutdown.h
+===================================================================
+--- tdm/kfrontend/tdmshutdown.h.orig
++++ tdm/kfrontend/tdmshutdown.h
+@@ -69,7 +69,7 @@ class TDMShutdownBase : public FDialog,
+ #else
+ 	static const bool willShut = true;
+ #endif
+-	bool mayNuke, doesNuke, mayOk, maySched;
++	bool mayNuke, doesNuke, mayOk, maySched, willSuspend;
+ 
+   private slots:
+ 	void slotSched();
+@@ -120,7 +120,6 @@ class TDMShutdown : public TDMShutdownBa
+ 	TQComboBox *targets;
+ 	int oldTarget;
+ 	int sch_st, sch_to;
+-
+ };
+ 
+ class TDMRadioButton : public TQRadioButton {
+@@ -170,10 +169,13 @@ class TDMSlimShutdown : public FDialog {
+ 	void slotReboot();
+ 	void slotReboot( int );
+ 	void slotSched();
++        void slotSuspend();
++        void slotSuspend(int);
+ 
+   private:
+ 	bool checkShutdown( int type, const char *os );
+ 	char **targetList;
++        bool suspend_disk, suspend_ram, standby;
+ 
+ };
+ 
+Index: tdm/kfrontend/Makefile.am
+===================================================================
+--- tdm/kfrontend/Makefile.am.orig
++++ tdm/kfrontend/Makefile.am
+@@ -4,7 +4,7 @@ GENTDMCONF_FLAGS = --no-old
+ SUBDIRS = themer themes pics sessions
+ 
+ AM_CPPFLAGS = -I$(srcdir)/../backend -I.. -I$(top_srcdir)/kcontrol/background \
+-    -I$(top_srcdir)/tdmlib $(all_includes)
++    -I$(top_srcdir)/tdmlib $(all_includes) $(DBUS_INCS)
+ 
+ bin_PROGRAMS = tdm_config tdm_greet krootimage gentdmconf tdmctl
+ 
+@@ -25,7 +25,7 @@ tdm_greet_SOURCES = \
+     kgreeter.cpp \
+     kgapp.cpp
+ tdm_greet_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIB_QT) -lDCOP $(LIB_TDECORE) $(LIB_TDEUI) -ltdefx $(LIB_KIO) -lktexteditor
+-tdm_greet_LDADD = themer/libtdmthemer.a $(LIB_TDEUI) $(XTESTLIB) $(LIBPOSIX4)
++tdm_greet_LDADD = themer/libtdmthemer.a $(LIB_TDEUI) $(XTESTLIB) $(LIBPOSIX4) -llazy $(DBUS_LIBS)
+ 
+ krootimage_SOURCES = krootimage.cpp
+ krootimage_LDFLAGS = $(all_libraries) $(KDE_RPATH) $(LIB_QT) -lDCOP $(LIB_TDECORE) $(LIB_TDEUI) -ltdefx $(LIB_KIO) -lktexteditor

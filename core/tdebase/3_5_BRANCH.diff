@@ -1,0 +1,64 @@
+package: kdebase-3.5.10.tar.bz2
+kdemod: kdebase
+Index: BRANCH_STATUS
+===================================================================
+--- /dev/null
++++ BRANCH_STATUS
+@@ -0,0 +1,2 @@
++current HEAD: 865247
++svn di between //tags/KDE/3.5.10/kdebase and //branches/KDE/3.5/kdebase
+Index: kicker/libkicker/panner.cpp
+===================================================================
+--- kicker/libkicker/panner.cpp.orig
++++ kicker/libkicker/panner.cpp
+@@ -95,6 +95,37 @@ void Panner::createScrollButtons()
+     setupButtons();
+ }
+ 
++void Panner::createScrollButtons()
++{
++    if (_luSB)
++    {
++        return;
++    }
++
++    // left/up scroll button
++    _luSB = new SimpleArrowButton(this);
++    _luSB->installEventFilter(this);
++    //_luSB->setAutoRepeat(true);
++    _luSB->setMinimumSize(12, 12);
++    _luSB->hide();
++    _layout->addWidget(_luSB);
++    connect(_luSB, SIGNAL(pressed()), SLOT(startScrollLeftUp()));
++    connect(_luSB, SIGNAL(released()), SLOT(stopScroll()));
++
++    // right/down scroll button
++    _rdSB = new SimpleArrowButton(this);
++    _rdSB->installEventFilter(this);
++    //_rdSB->setAutoRepeat(true);
++    _rdSB->setMinimumSize(12, 12);
++    _rdSB->hide();
++    _layout->addWidget(_rdSB);
++    connect(_rdSB, SIGNAL(pressed()), SLOT(startScrollRightDown()));
++    connect(_rdSB, SIGNAL(released()), SLOT(stopScroll()));
++
++    // set up the buttons
++    setupButtons();
++}
++
+ void Panner::setupButtons()
+ {
+     if (orientation() == TQt::Horizontal)
+Index: kicker/applets/systemtray/systemtrayapplet.cpp
+===================================================================
+--- kicker/applets/systemtray/systemtrayapplet.cpp.orig
++++ kicker/applets/systemtray/systemtrayapplet.cpp
+@@ -60,6 +60,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE
+ #define ICON_MARGIN 1
+ #define ICON_END_MARGIN KickerSettings::showDeepButtons()?4:0
+ 
++#define ICON_MARGIN 1
++
+ extern "C"
+ {
+     KDE_EXPORT KPanelApplet* init(TQWidget *parent, const TQString& configFile)

@@ -1,0 +1,106 @@
+Index: kcontrol/componentchooser/componentchooser.desktop
+===================================================================
+--- kcontrol/componentchooser/componentchooser.desktop.orig
++++ kcontrol/componentchooser/componentchooser.desktop
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+ Exec=kcmshell componentchooser
+-Icon=misc
++Icon=kcmcomponentchooser
+ Type=Application
+ 
+ 
+Index: kcontrol/taskbar/kcmtaskbar.desktop
+===================================================================
+--- kcontrol/taskbar/kcmtaskbar.desktop.orig
++++ kcontrol/taskbar/kcmtaskbar.desktop
+@@ -1,5 +1,5 @@
+ [Desktop Entry]
+-Icon=kmenu
++Icon=kcmtaskbar
+ Type=Application
+ DocPath=kcontrol/kcmtaskbar/index.html
+ Exec=kcmshell kcmtaskbar
+Index: kcontrol/nics/nic.desktop
+===================================================================
+--- kcontrol/nics/nic.desktop.orig
++++ kcontrol/nics/nic.desktop
+@@ -2,7 +2,7 @@
+ Exec=kcmshell nic
+ Type=Application
+ DocPath=kinfocenter/nics/index.html
+-Icon=network
++Icon=kcmnic
+ 
+ 
+ X-KDE-Library=nic
+Index: kcontrol/input/mouse.desktop
+===================================================================
+--- kcontrol/input/mouse.desktop.orig
++++ kcontrol/input/mouse.desktop
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+ Exec=kcmshell mouse
+-Icon=mouse
++Icon=kcmmouse
+ Type=Application
+ DocPath=kcontrol/mouse/index.html
+ 
+Index: kcontrol/smserver/kcmsmserver.desktop
+===================================================================
+--- kcontrol/smserver/kcmsmserver.desktop.orig
++++ kcontrol/smserver/kcmsmserver.desktop
+@@ -1,5 +1,5 @@
+ [Desktop Entry]
+-Icon=exit
++Icon=kcmsmserver
+ Type=Application
+ DocPath=kcontrol/kcmsmserver/index.html
+ Exec=kcmshell kcmsmserver
+Index: kcontrol/kded/kcmkded.desktop
+===================================================================
+--- kcontrol/kded/kcmkded.desktop.orig
++++ kcontrol/kded/kcmkded.desktop
+@@ -1,6 +1,6 @@
+ [Desktop Entry]
+ Exec=kcmshell kcmkded
+-Icon=services
++Icon=kcmkded
+ Type=Application
+ 
+ 
+Index: kcontrol/konq/desktop.desktop
+===================================================================
+--- kcontrol/konq/desktop.desktop.orig
++++ kcontrol/konq/desktop.desktop
+@@ -1,7 +1,7 @@
+ [Desktop Entry]
+ Type=Application
+ DocPath=kcontrol/desktop/index.html#desktop-number
+-Icon=desktop
++Icon=kcmdesktop
+ Exec=kcmshell desktop
+ 
+ 
+Index: kcontrol/konq/desktopbehavior.desktop
+===================================================================
+--- kcontrol/konq/desktopbehavior.desktop.orig
++++ kcontrol/konq/desktopbehavior.desktop
+@@ -1,7 +1,7 @@
+ [Desktop Entry]
+ Type=Application
+ DocPath=kcontrol/desktopbehavior/index.html
+-Icon=desktop
++Icon=kcmdesktopbehavior
+ Exec=kcmshell desktopbehavior
+ 
+ 
+Index: kcontrol/privacy/privacy.desktop
+===================================================================
+--- kcontrol/privacy/privacy.desktop.orig
++++ kcontrol/privacy/privacy.desktop
+@@ -1,5 +1,5 @@
+ [Desktop Entry]
+-Icon=trashcan_empty
++Icon=kcmprivacy
+ Comment=Privacy - a kcontrol module to clean unwanted traces the user leaves on the system

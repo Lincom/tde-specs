@@ -1,0 +1,13 @@
+Index: ksmserver/shutdowndlg.cpp
+===================================================================
+--- ksmserver/shutdowndlg.cpp.orig
++++ ksmserver/shutdowndlg.cpp
+@@ -936,7 +936,7 @@ KSMShutdownDlg::KSMShutdownDlg( TQWidget
+ 			btnHalt->setAccel( "ALT+" + btnHalt->textLabel().lower()[i+1] ) ;
+ 			hbuttonbox2->addWidget ( btnHalt );
+ 			connect(btnHalt, TQT_SIGNAL(clicked()), TQT_SLOT(slotHalt()));
+-				if ( sdtype == KApplication::ShutdownTypeHalt )
++				if ( sdtype == KApplication::ShutdownTypeHalt || getenv("TDM_AUTOLOGIN") )
+ 					btnHalt->setFocus();
+ 
+ 			// cancel buttonbox

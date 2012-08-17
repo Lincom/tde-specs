@@ -1,0 +1,11 @@
+AC_INIT(src/fileshareset.cpp)
+AM_INIT_AUTOMAKE(fileshareset, 0.1)
+AC_PREFIX_DEFAULT(/usr/)
+AC_PROG_CXX
+AC_PROG_CPP
+AC_LANG_CPLUSPLUS
+
+AC_SUBST(PREFIX_DEFAULT)
+AC_OUTPUT(src/Makefile)
+AC_OUTPUT(Makefile)
+
