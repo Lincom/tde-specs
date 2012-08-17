@@ -3,7 +3,7 @@ bugs.kde.org number :
 applied: yes
 author: Waldo Bastian <bastian@kde.org>
 
-QTextEdit::zoomIn /QTextEdit::zoomOut does not work if the original
+TQTextEdit::zoomIn /TQTextEdit::zoomOut does not work if the original
 font had its size specified in pixels instead of points.
 pointSize() returns 0 in such case.
 

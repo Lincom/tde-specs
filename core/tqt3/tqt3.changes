@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 17 00:13:39 UTC 2012 - robxu9@gmail.com
+
+- Use some Java magic to convert Q* to TQ* in patches
+
+-------------------------------------------------------------------
 Thu Aug 16 14:11:17 UTC 2012 - robxu9@gmail.com
 
 - bump for new tqt3 version (3.5.0)
