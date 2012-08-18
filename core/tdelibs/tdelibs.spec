@@ -74,6 +74,7 @@ Patch157:       ignore-inline-menu.diff
 Patch162:       arts-acinclude.patch
 Patch205:       kdelibs-3.5.10-cve-2009-2537-select-length.patch
 Patch210:       kdelibs-3.5.10-kio.patch
+Patch211:	kstyle-method-fix.patch
 
 %description
 This package contains tdelibs, one of the basic packages of the Trinity
@@ -179,13 +180,14 @@ to develop applications that require these.
 %patch162 -p1
 %patch205 -p1
 %patch210 -p1
+%patch211
 
 tar xfvj %SOURCE12
 #
 # define KDE version exactly
 #
 myrelease=$(echo %release | cut -d. -f-1)
-sed 's,#define TDE_VERSION_STRING "\(.*\)",#define TDE_VERSION_STRING "\1 \\"release '$myrelease'\\"",' tdecore/tdeversion.h > kdecore/kdeversion.h_ && mv tdecore/tdeversion.h_ tdecore/tdeversion.h
+sed 's,#define TDE_VERSION_STRING "\(.*\)",#define TDE_VERSION_STRING "\1 \\"release '$myrelease'\\"",' tdecore/tdeversion.h > tdecore/tdeversion.h_ && mv tdecore/tdeversion.h_ tdecore/tdeversion.h
 #
 # create build enviroment
 # 
