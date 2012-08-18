@@ -180,7 +180,7 @@ to develop applications that require these.
 %patch162 -p1
 %patch205 -p1
 %patch210 -p1
-%patch211
+#%patch211
 
 tar xfvj %SOURCE12
 #
