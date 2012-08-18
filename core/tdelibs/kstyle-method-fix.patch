@@ -1,0 +1,19 @@
+Index: tdefx/kstyle.cpp
+===================================================================
+--- tdefx/kstyle.cpp
++++ tdefx/kstyle.cpp
+@@ -345,11 +345,12 @@ void KStyle::renderMenuBlendPixmap( KPix
+ 
+ void KStyle::drawKStylePrimitive( KStylePrimitive kpe,
+ 								  TQPainter* p,
+-								  const TQWidget* widget,
++								  TQStyleControlElementData ceData,
+ 								  const TQRect &r,
+ 								  const TQColorGroup &cg,
+ 								  SFlags flags,
+-								  const TQStyleOption &opt ) const
++								  const TQStyleOption &opt,
++								  const TQWidget* widget ) const
+ {
+ 	TQStyleControlElementData ceData = populateControlElementDataFromWidget(widget, TQStyleOption());
+ 	drawKStylePrimitive(kpe, p, ceData, getControlElementFlagsForObject(widget, ceData.widgetObjectTypes, TQStyleOption()), r, cg, flags, opt);
