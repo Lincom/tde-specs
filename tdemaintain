@@ -1,0 +1,240 @@
+#!/bin/bash
+
+FILETOCHECK=.tdemaintain
+CHAINLIST=.tdechainlist
+WORKINGDIR=$PWD
+VERSION=0.01
+TDEVER=R13.99
+QT_VERSION=3.5.0
+PROJECT=home:bravoall1552:tdedev
+MESSAGE=Commit
+BUILDCONFIG=_buildconfig-openSUSE_12.1-i586
+BUILDINFO=_buildinfo-openSUSE_12.1-i586.xml
+# UPPKG
+# SUPKG
+
+#####
+# Util Functions
+#####
+
+noFile(){
+	echo "Couldn't find .tdemaintain. Are you in the right directory?"
+	echo -n "Do you want me to create it for you? (y/N) "
+	read CHOICE
+	if [ "$CHOICE" == "y" ] || [ "$CHOICE" == "Y" ]; then
+		touch $WORKINGDIR/.tdemaintain
+		echo -n "What is the upstream package name? "
+		read UPSTREAM
+		echo -n "What is the openSUSE source package name? "
+		read SUSEPKG
+		echo "UPPKG=$UPSTREAM" >> $WORKINGDIR/.tdemaintain
+		echo "SUPKG=$SUSEPKG" >> $WORKINGDIR/.tdemaintain
+		echo "Created .tdemaintain. You may now invoke commands."
+	fi
+}
+
+pullGit(){
+	git pull --rebase
+}
+
+commitGit(){
+	git add .
+	git commit -a -m "$MESSAGE"
+}
+
+pushGit(){
+	git push origin master
+}
+
+failOSC(){
+	rm -rf .osc
+	echo "Package doesn't exist on OBS! Create it first!"
+	exit 1
+}
+
+initOSC(){
+	if [[ !(-d "$WORKINGDIR/.osc") ]]; then
+		osc init $PROJECT $SUPKG || failOSC
+	fi
+}
+
+commitOSC(){
+	osc vc $SUPKG.changes -m "$MESSAGE" || exit 1
+	for i in `ls -1`; do
+		if [ "$i" == "$BUILDCONFIG" ] || [ "$i" == "$BUILDINFO" ]; then
+			echo "Skipping build cache file $i"
+		else
+			osc add $i
+		fi
+	done
+}
+
+pushOSC(){
+	osc ci -m "$MESSAGE"
+}
+
+buildOSC(){
+	osc build -b -d --local-package --clean --alternative-project=$PROJECT openSUSE_12.1 i586
+}
+
+getTarballName(){
+	NAME=$UPPKG
+	if [ "$NAME" == "qt3" ] || [ "$NAME" == "tqt3" ]; then
+		TDEVER=$QT_VERSION
+	fi
+	echo "$NAME-$TDEVER"
+}
+
+genTarball(){
+	NAME=$UPPKG
+	local GEN=n
+	if [ "$NAME" == "qt3" ] || [ "$NAME" == "tqt3" ]; then
+		TDEVER=$QT_VERSION
+	fi
+	if [ "$NAME" == "none" ]; then
+		echo "No upstream; moving on."
+		GEN=y
+	else
+		local tarballname=$(getTarballName)
+		for i in `find . -iname "*.tar.bz2" -type f -mtime -1`; do
+			if [ "$i" == "./$tarballname.tar.bz2" ]; then
+				GEN=y
+			fi
+		done
+	fi
+	if [ "$GEN" == "y" ]; then
+		echo "Tarball too new; not generating new one."
+	else
+		git clone --depth=1 http://scm.trinitydesktop.org/scm/git/$NAME $tarballname
+		cd $tarballname
+		if [[ -e .gitmodules ]]; then
+			sed -i 's/system@//g' .gitmodules
+			git submodule update --init
+		fi
+		cd ..
+		tar cjf $tarballname.tar.bz2 $tarballname
+		rm -rf $tarballname
+	fi
+}
+
+setMessage(){
+	if [ "$COMMITMSG" == "" ]; then
+		echo -n "Commit Message: "
+		read MSG
+		MESSAGE=$MSG
+	else
+		MESSAGE=$COMMITMSG
+	fi
+}
+
+setupQuilt(){
+	quilt setup $SUPKG.spec -v
+	local tarballname=$(getTarballName)
+	if [ -d $tarballname ]; then
+		cd $tarballname
+		quilt push -avf
+		echo "quilt commands: quilt push -avf, quilt refresh, quilt pop, quilt add <file>"
+		echo "creating new patch: quilt new <name>, quilt edit <name>, quilt diff"
+		echo "delete directory when done."
+	else
+		echo "Quilt failed in %prep!"
+	fi
+}
+
+stopQuilt(){
+	local tarballname=$(getTarballName)
+	if [ -d $tarballname ]; then
+		cd $tarballname
+		quilt refresh
+		cd ..
+		rm -rf $tarballname
+	else
+		echo "Huh? No such directory for quilt."
+	fi
+}
+
+#####
+# Main Functions
+#####
+
+# Check to ensure that .tdemaintain exists
+# If it does, grab variables from the file
+# If it does not, ask if it should set them up
+checkFile(){
+	if [[ !(-r "$WORKINGDIR/.tdemaintain") ]]; then
+		noFile
+		exit 1
+	fi
+	source $WORKINGDIR/.tdemaintain
+}
+
+# Help menu
+showHelp(){
+	echo "tdemaintain version $VERSION - help menu"
+	echo "Usage: tdemaintain [command]"
+	echo ""
+	echo "build		Build the package"
+	echo "chain		Attempt to build a chain of packages"
+	echo "help		Show this help menu"
+	echo "patch		Setup with quilt"
+	echo "fpatch		Finish patching with quilt"
+	echo "push		Push the package to GIT and OBS"
+	exit 0
+}
+
+buildPkg(){
+	genTarball
+	buildOSC
+}
+
+pushPkg(){
+	setMessage
+	initOSC
+	genTarball
+	commitOSC
+	pushOSC
+	commitGit
+	pullGit
+	pushGit
+}
+
+patchPkg(){
+	genTarball
+	setupQuilt
+}
+
+finishPatchPkg(){
+	stopQuilt
+}
+
+#TODO NOT IMPLEMENTED
+chainList(){
+	echo "Not implemented yet!"
+	exit 1
+}
+
+runProg(){
+	checkFile
+	case $1 in
+	"build")
+		buildPkg
+		;;
+	"chain")
+		chainList
+		;;
+	"push")
+		pushPkg
+		;;
+	"patch")
+		patchPkg
+		;;
+	"fpatch")
+		finishPatchPkg
+		;;
+	*)
+		showHelp
+		;;
+	esac
+}
+
+runProg $1
